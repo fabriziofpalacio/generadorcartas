@@ -55,8 +55,7 @@
   .card-brandline .eyebrow { font-family:'Rajdhani',sans-serif; font-size:10px; letter-spacing:.08em; opacity:.85; font-weight:600; text-transform:uppercase; }
   .card-brandline .model-line { font-family:'Rajdhani',sans-serif; font-size:12px; font-weight:600; margin-top:1px; }
   .card-logo { font-family:'Rajdhani',sans-serif; font-size:12px; font-weight:600; padding:2px 8px; border-radius:20px; background:rgba(255,255,255,.15); color:#fff; letter-spacing:.02em; }
-  .card-photo { margin:4px 10px; border-radius:8px; background:#fff; height:38%; display:flex; align-items:center; justify-content:center; overflow:hidden; }
-  .card-photo img { width:100%; height:100%; object-fit:contain; }
+  .card-photo { margin:4px 10px; border-radius:8px; background-color:#fff; background-size:contain; background-position:center; background-repeat:no-repeat; height:38%; display:flex; align-items:center; justify-content:center; overflow:hidden; }
   .card-photo .noimg { font-size:11px; color:#999; }
   .card-title { color:#fff; font-family:'Teko',sans-serif; font-size:44px; font-weight:600; padding:0 12px 6px; line-height:0.95; letter-spacing:.01em; text-transform:uppercase; }
   .card-fact { margin:0 10px 8px; background:rgba(255,255,255,.06); border-radius:8px; padding:8px 10px; flex:1; }
@@ -95,6 +94,13 @@
   .card.mj .card-stats .stat { background:rgba(91,42,134,.4); color:#f0c9e6; }
   .card.mj .card-footer { background: var(--mj-purple); color:#fff; }
 
+  .card.gen .card-inner { background: linear-gradient(180deg,#2b2d30,#131416); border:2px solid #9aa0a6; }
+  .card.gen .eyebrow, .card.gen .ftitle { color: #c7ccd1; }
+  .card.gen .card-title { color:#fff; }
+  .card.gen .card-logo { background: #4a4e54; color:#fff; }
+  .card.gen .card-stats .stat { background:rgba(255,255,255,.06); color:#fff; border-left:2px solid #9aa0a6; }
+  .card.gen .card-footer { background: #4a4e54; color:#fff; }
+
   .status { font-size:12px; color:var(--text-muted); text-align:center; margin-top:8px; min-height:16px; }
 </style>
 </head>
@@ -112,10 +118,50 @@
       <div class="field">
         <label>Marca</label>
         <select id="brand">
-          <option value="hw">Hot Wheels</option>
-          <option value="mb">Matchbox</option>
-          <option value="gl">Greenlight</option>
-          <option value="mj">Majorette</option>
+          <option value="Massdi (Masdi)">Massdi (Masdi)</option>
+          <option value="JKM (Jiangsu Kuai Mei)">JKM (Jiangsu Kuai Mei)</option>
+          <option value="Time Micro (TM)">Time Micro (TM)</option>
+          <option value="CM Model">CM Model</option>
+          <option value="Xcartoys">Xcartoys</option>
+          <option value="MINI GT">MINI GT</option>
+          <option value="Kaido House">Kaido House</option>
+          <option value="Inno64 (Inno Models)">Inno64 (Inno Models)</option>
+          <option value="Tarmac Works">Tarmac Works</option>
+          <option value="Pop Race">Pop Race</option>
+          <option value="Tomica Limited Vintage (TLV / TLVN)">Tomica Limited Vintage (TLV / TLVN)</option>
+          <option value="Micro Turbo">Micro Turbo</option>
+          <option value="Hobby Japan">Hobby Japan</option>
+          <option value="Para64">Para64</option>
+          <option value="Era Car">Era Car</option>
+          <option value="Schuco">Schuco</option>
+          <option value="Kyosho">Kyosho</option>
+          <option value="BM Creations">BM Creations</option>
+          <option value="PGM (Private Goods Model)">PGM (Private Goods Model)</option>
+          <option value="Ignition Model">Ignition Model</option>
+          <option value="YM Model">YM Model</option>
+          <option value="Error 404">Error 404</option>
+          <option value="One Model">One Model</option>
+          <option value="MotorHelix">MotorHelix</option>
+          <option value="Greenlight Collectibles" data-theme="gl">Greenlight Collectibles</option>
+          <option value="Auto World">Auto World</option>
+          <option value="M2 Machines">M2 Machines</option>
+          <option value="Johnny Lightning">Johnny Lightning</option>
+          <option value="Racing Champions">Racing Champions</option>
+          <option value="Jada Toys">Jada Toys</option>
+          <option value="Hot Wheels" data-theme="hw" selected>Hot Wheels</option>
+          <option value="Matchbox" data-theme="mb">Matchbox</option>
+          <option value="Majorette" data-theme="mj">Majorette</option>
+          <option value="Tomica">Tomica</option>
+          <option value="Siku">Siku</option>
+          <option value="Welly">Welly</option>
+          <option value="Maisto">Maisto</option>
+          <option value="Bburago">Bburago</option>
+          <option value="Kinsmart">Kinsmart</option>
+          <option value="Corgi">Corgi</option>
+          <option value="First Gear">First Gear</option>
+          <option value="DCP (Diecast Promotions)">DCP (Diecast Promotions)</option>
+          <option value="Tiny">Tiny</option>
+          <option value="GCD (GainCorp Products)">GCD (GainCorp Products)</option>
         </select>
       </div>
 
@@ -137,7 +183,7 @@
       <div class="field"><label>Serie</label><input id="series" placeholder="MBX Road Trip"></div>
 
       <div class="row2">
-        <div class="field"><label>Velocidad top (mph)</label><input id="topspeed" placeholder="120"></div>
+        <div class="field"><label>Velocidad top (km/h)</label><input id="topspeed" placeholder="190"></div>
         <div class="field"><label>Motor</label><input id="engine" placeholder="2.5L"></div>
       </div>
       <div class="actions">
@@ -166,7 +212,7 @@
             </ul>
           </div>
           <div class="card-stats">
-            <div class="stat"><span>VELOCIDAD TOP</span><span id="pv-topspeed">-</span></div>
+            <div class="stat"><span>VELOCIDAD TOP (KM/H)</span><span id="pv-topspeed">-</span></div>
             <div class="stat"><span>MOTOR</span><span id="pv-engine">-</span></div>
           </div>
           <div class="card-footer">MI COLECCIÓN</div>
@@ -181,15 +227,17 @@
 
 <script>
 (function(){
-  const brandNames = {hw:'Hot Wheels', mb:'Matchbox', gl:'Greenlight', mj:'Majorette'};
   let currentImage = null;
   const el = id => document.getElementById(id);
 
   function updatePreview(){
-    const brand = el('brand').value;
+    const select = el('brand');
+    const opt = select.options[select.selectedIndex];
+    const brandName = opt.value;
+    const theme = opt.dataset.theme || 'gen';
     const card = el('previewCard');
-    card.className = 'card ' + brand;
-    el('pv-brandtag').textContent = brandNames[brand];
+    card.className = 'card ' + theme;
+    el('pv-brandtag').textContent = brandName;
     el('pv-model').textContent = el('model').value || 'Nombre del modelo';
     el('pv-color').textContent = el('color').value || '-';
     el('pv-year').textContent = el('year').value || '-';
@@ -198,7 +246,13 @@
     el('pv-topspeed').textContent = el('topspeed').value || '-';
     el('pv-engine').textContent = el('engine').value || '-';
     const photo = el('pv-photo');
-    photo.innerHTML = currentImage ? '<img src="'+currentImage+'">' : '<span class="noimg">Sin imagen</span>';
+    if(currentImage){
+      photo.style.backgroundImage = 'url(' + currentImage + ')';
+      photo.innerHTML = '';
+    } else {
+      photo.style.backgroundImage = 'none';
+      photo.innerHTML = '<span class="noimg">Sin imagen</span>';
+    }
   }
 
   ['brand','model','color','year','series','topspeed','engine'].forEach(id=>{
