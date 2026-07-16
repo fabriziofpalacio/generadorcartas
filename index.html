@@ -268,14 +268,14 @@
     reader.onload = function(ev){
       const img = new Image();
       img.onload = function(){
-        const maxW = 500;
+        const maxW = 1600;
         const scale = Math.min(1, maxW / img.width);
         const canvas = document.createElement('canvas');
         canvas.width = img.width * scale;
         canvas.height = img.height * scale;
         const ctx = canvas.getContext('2d');
         ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-        currentImage = canvas.toDataURL('image/jpeg', 0.82);
+        currentImage = canvas.toDataURL('image/jpeg', 0.95);
         el('imgDropLabel').textContent = 'Imagen cargada · cambiar';
         updatePreview();
       };
