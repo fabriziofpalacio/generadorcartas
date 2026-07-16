@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Generador de cartas · Colección 1/64</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Teko:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tabler-icons/2.44.0/iconfont/tabler-icons.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<style>
+  :root{
+    --hw-black:#0d0d0d; --hw-black2:#1a1a1a; --hw-red:#e2231a; --hw-yellow:#ffd23f;
+    --mb-red:#c8102e; --mb-yellow:#ffcf00;
+    --gl-green:#0a5c36; --gl-lime:#8fd14f;
+    --mj-purple:#5b2a86; --mj-pink:#e94f9c;
+
+    --surface-2:#ffffff; --surface-1:#f4f3f0; --surface-0:#eceae4;
+    --text-primary:#1a1a1a; --text-secondary:#65635c; --text-muted:#9c998f;
+    --border:#dedad2; --border-strong:#c7c2b7;
+    --radius:8px;
+    --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin:0; padding:0; background:var(--surface-0); color:var(--text-primary); font-family:var(--font-sans); }
+  .page { max-width:800px; margin:0 auto; padding:32px 20px 80px; }
+  .page-header { text-align:center; margin-bottom:28px; }
+  .page-header h1 { font-family:'Teko',sans-serif; font-size:48px; font-weight:600; margin:0; letter-spacing:.01em; text-transform:uppercase; }
+  .page-header p { font-size:14px; color:var(--text-secondary); margin:4px 0 0; }
+
+  input, select, button { font-family:var(--font-sans); font-size:14px; }
+  input, select { height:36px; padding:0 10px; border:0.5px solid var(--border); border-radius:var(--radius); background:var(--surface-2); color:var(--text-primary); width:100%; }
+  button { height:36px; padding:0 14px; border:0.5px solid var(--border-strong); border-radius:var(--radius); background:transparent; color:var(--text-primary); cursor:pointer; }
+  button:hover { background:var(--surface-1); }
+  button:active { transform:scale(0.98); }
+
+  .layout { display:grid; grid-template-columns: 340px 1fr; gap:24px; align-items:start; }
+  @media (max-width: 700px){ .layout{ grid-template-columns: 1fr; } }
+  .panel { background:var(--surface-2); border:0.5px solid var(--border); border-radius:12px; padding:1rem 1.25rem; }
+  .field { margin-bottom:12px; }
+  .field label { display:block; font-size:13px; color:var(--text-secondary); margin-bottom:4px; }
+  .row2 { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+  .imgdrop { border:1px dashed var(--border-strong); border-radius:var(--radius); padding:14px; text-align:center; cursor:pointer; font-size:13px; color:var(--text-secondary); }
+  .imgdrop:hover { background:var(--surface-1); }
+  .actions { display:flex; gap:8px; margin-top:14px; }
+  .actions button { flex:1; }
+
+  .previewwrap { display:flex; flex-direction:column; align-items:center; gap:14px; }
+  #downloadBtn { width:220px; }
+
+  .card { width:300px; aspect-ratio:3/4; border-radius:18px; padding:10px; position:relative; overflow:hidden; }
+  .card-inner { position:relative; width:100%; height:100%; border-radius:12px; background:#0d0d0d; overflow:hidden; display:flex; flex-direction:column; }
+  .card-topbar { display:flex; justify-content:space-between; align-items:flex-start; padding:8px 10px 4px; }
+  .card-brandline { color:#fff; }
+  .card-brandline .eyebrow { font-family:'Rajdhani',sans-serif; font-size:10px; letter-spacing:.08em; opacity:.85; font-weight:600; text-transform:uppercase; }
+  .card-brandline .model-line { font-family:'Rajdhani',sans-serif; font-size:12px; font-weight:600; margin-top:1px; }
+  .card-logo { font-family:'Rajdhani',sans-serif; font-size:12px; font-weight:600; padding:2px 8px; border-radius:20px; background:rgba(255,255,255,.15); color:#fff; letter-spacing:.02em; }
+  .card-photo { margin:4px 10px; border-radius:8px; background:#fff; height:38%; display:flex; align-items:center; justify-content:center; overflow:hidden; }
+  .card-photo img { width:100%; height:100%; object-fit:contain; }
+  .card-photo .noimg { font-size:11px; color:#999; }
+  .card-title { color:#fff; font-family:'Teko',sans-serif; font-size:44px; font-weight:600; padding:0 12px 6px; line-height:0.95; letter-spacing:.01em; text-transform:uppercase; }
+  .card-fact { margin:0 10px 8px; background:rgba(255,255,255,.06); border-radius:8px; padding:8px 10px; flex:1; }
+  .card-fact .ftitle { font-family:'Rajdhani',sans-serif; font-size:11px; letter-spacing:.08em; font-weight:600; margin-bottom:4px; text-transform:uppercase; }
+  .card-fact ul { list-style:none; margin:0; padding:0; }
+  .card-fact li { font-family:'Rajdhani',sans-serif; color:#e8e8e8; font-size:14px; font-weight:600; padding:1px 0; }
+  .card-stats { margin:0 10px; display:flex; flex-direction:column; gap:3px; }
+  .card-stats .stat { font-family:'Rajdhani',sans-serif; border-radius:5px; padding:3px 8px; display:flex; justify-content:space-between; font-size:11px; font-weight:600; letter-spacing:.02em; }
+  .card-footer { font-family:'Rajdhani',sans-serif; margin:8px 10px 10px; border-radius:20px; padding:4px 10px; font-size:11px; font-weight:600; letter-spacing:.04em; text-align:center; text-transform:uppercase; }
+
+  .card.hw .eyebrow, .card.hw .ftitle { color: var(--hw-red); }
+  .card.hw .card-title { color: var(--hw-yellow); text-shadow: 0 1px 2px rgba(0,0,0,.5); }
+  .card.hw .card-logo { background: var(--hw-red); color:#fff; }
+  .card.hw .card-inner { background: linear-gradient(180deg,var(--hw-black2),var(--hw-black)); border:2px solid var(--hw-red); }
+  .card.hw .card-stats .stat { background:rgba(255,255,255,.06); color:#fff; border-left:2px solid var(--hw-red); }
+  .card.hw .card-footer { background: var(--hw-red); color:#fff; }
+
+  .card.mb .card-inner { background:#141414; border:2px solid var(--mb-red); }
+  .card.mb .eyebrow, .card.mb .ftitle { color: var(--mb-yellow); }
+  .card.mb .card-title { color:#fff; }
+  .card.mb .card-logo { background: var(--mb-red); color:#fff; }
+  .card.mb .card-stats .stat { background:rgba(200,16,46,.35); color:var(--mb-yellow); }
+  .card.mb .card-footer { background: var(--mb-red); color:#fff; }
+
+  .card.gl .card-inner { background:#0c1c13; border:2px solid var(--gl-lime); }
+  .card.gl .eyebrow, .card.gl .ftitle { color: var(--gl-lime); }
+  .card.gl .card-title { color:#fff; }
+  .card.gl .card-logo { background: var(--gl-green); color:#fff; }
+  .card.gl .card-stats .stat { background:rgba(10,92,54,.4); color:var(--gl-lime); }
+  .card.gl .card-footer { background: var(--gl-green); color:#fff; }
+
+  .card.mj .card-inner { background:#1a0f2b; border:2px solid var(--mj-pink); }
+  .card.mj .eyebrow, .card.mj .ftitle { color: var(--mj-pink); }
+  .card.mj .card-title { color:#fff; }
+  .card.mj .card-logo { background: var(--mj-purple); color:#fff; }
+  .card.mj .card-stats .stat { background:rgba(91,42,134,.4); color:#f0c9e6; }
+  .card.mj .card-footer { background: var(--mj-purple); color:#fff; }
+
+  .status { font-size:12px; color:var(--text-muted); text-align:center; margin-top:8px; min-height:16px; }
+</style>
+</head>
+<body>
+
+<div class="page">
+  <div class="page-header">
+    <h1>Generador de cartas</h1>
+    <p>Crea la ficha de tu modelo y descárgala como imagen</p>
+  </div>
+
+  <div class="layout">
+
+    <div class="panel">
+      <div class="field">
+        <label>Marca</label>
+        <select id="brand">
+          <option value="hw">Hot Wheels</option>
+          <option value="mb">Matchbox</option>
+          <option value="gl">Greenlight</option>
+          <option value="mj">Majorette</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label>Foto del modelo</label>
+        <div class="imgdrop" id="imgDrop"><i class="ti ti-photo-plus" style="font-size:20px"></i><div id="imgDropLabel">Subir imagen</div></div>
+        <input type="file" id="imgInput" accept="image/*" style="display:none">
+      </div>
+
+      <div class="field">
+        <label>Nombre del modelo</label>
+        <input id="model" placeholder="'16 Mazda CX-5">
+      </div>
+
+      <div class="row2">
+        <div class="field"><label>Color</label><input id="color" placeholder="Gris"></div>
+        <div class="field"><label>Año</label><input id="year" placeholder="2016"></div>
+      </div>
+      <div class="field"><label>Serie</label><input id="series" placeholder="MBX Road Trip"></div>
+
+      <div class="row2">
+        <div class="field"><label>Velocidad top (mph)</label><input id="topspeed" placeholder="120"></div>
+        <div class="field"><label>Motor</label><input id="engine" placeholder="2.5L"></div>
+      </div>
+      <div class="actions">
+        <button id="clearBtn"><i class="ti ti-refresh"></i> Limpiar</button>
+      </div>
+    </div>
+
+    <div class="previewwrap">
+      <div class="card hw" id="previewCard">
+        <div class="card-inner">
+          <div class="card-topbar">
+            <div class="card-brandline">
+              <div class="eyebrow">FICHA DE COLECCIÓN</div>
+              <div class="model-line" id="pv-series-top">Serie</div>
+            </div>
+            <div class="card-logo" id="pv-brandtag">Hot Wheels</div>
+          </div>
+          <div class="card-photo" id="pv-photo"><span class="noimg">Sin imagen</span></div>
+          <div class="card-title" id="pv-model">Nombre del modelo</div>
+          <div class="card-fact">
+            <div class="ftitle">FICHA TÉCNICA</div>
+            <ul>
+              <li>Color: <span id="pv-color">-</span></li>
+              <li>Año: <span id="pv-year">-</span></li>
+              <li>Serie: <span id="pv-series">-</span></li>
+            </ul>
+          </div>
+          <div class="card-stats">
+            <div class="stat"><span>VELOCIDAD TOP</span><span id="pv-topspeed">-</span></div>
+            <div class="stat"><span>MOTOR</span><span id="pv-engine">-</span></div>
+          </div>
+          <div class="card-footer">MI COLECCIÓN</div>
+        </div>
+      </div>
+      <button id="downloadBtn"><i class="ti ti-download"></i> Descargar imagen</button>
+      <div class="status" id="status"></div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+(function(){
+  const brandNames = {hw:'Hot Wheels', mb:'Matchbox', gl:'Greenlight', mj:'Majorette'};
+  let currentImage = null;
+  const el = id => document.getElementById(id);
+
+  function updatePreview(){
+    const brand = el('brand').value;
+    const card = el('previewCard');
+    card.className = 'card ' + brand;
+    el('pv-brandtag').textContent = brandNames[brand];
+    el('pv-model').textContent = el('model').value || 'Nombre del modelo';
+    el('pv-color').textContent = el('color').value || '-';
+    el('pv-year').textContent = el('year').value || '-';
+    el('pv-series').textContent = el('series').value || '-';
+    el('pv-series-top').textContent = el('series').value || 'Serie';
+    el('pv-topspeed').textContent = el('topspeed').value || '-';
+    el('pv-engine').textContent = el('engine').value || '-';
+    const photo = el('pv-photo');
+    photo.innerHTML = currentImage ? '<img src="'+currentImage+'">' : '<span class="noimg">Sin imagen</span>';
+  }
+
+  ['brand','model','color','year','series','topspeed','engine'].forEach(id=>{
+    el(id).addEventListener('input', updatePreview);
+    el(id).addEventListener('change', updatePreview);
+  });
+
+  el('imgDrop').addEventListener('click', ()=> el('imgInput').click());
+  el('imgInput').addEventListener('change', (e)=>{
+    const file = e.target.files[0];
+    if(!file) return;
+    const reader = new FileReader();
+    reader.onload = function(ev){
+      const img = new Image();
+      img.onload = function(){
+        const maxW = 500;
+        const scale = Math.min(1, maxW / img.width);
+        const canvas = document.createElement('canvas');
+        canvas.width = img.width * scale;
+        canvas.height = img.height * scale;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        currentImage = canvas.toDataURL('image/jpeg', 0.82);
+        el('imgDropLabel').textContent = 'Imagen cargada · cambiar';
+        updatePreview();
+      };
+      img.src = ev.target.result;
+    };
+    reader.readAsDataURL(file);
+  });
+
+  el('clearBtn').addEventListener('click', ()=>{
+    currentImage = null;
+    ['model','color','year','series','topspeed','engine'].forEach(id=> el(id).value='');
+    el('imgDropLabel').textContent = 'Subir imagen';
+    el('status').textContent = '';
+    updatePreview();
+  });
+
+  function slugify(s){
+    return (s||'carta').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,'') || 'carta';
+  }
+
+  el('downloadBtn').addEventListener('click', ()=>{
+    if(!window.html2canvas){ el('status').textContent = 'La librería aún está cargando, intenta de nuevo en un momento.'; return; }
+    html2canvas(el('previewCard'), {backgroundColor:null, scale:3}).then(function(canvas){
+      const link = document.createElement('a');
+      link.download = slugify(el('model').value) + '.png';
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+      el('status').textContent = 'Imagen descargada.';
+    });
+  });
+
+  updatePreview();
+})();
+</script>
+</body>
+</html>
