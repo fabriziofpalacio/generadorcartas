@@ -296,14 +296,30 @@
     return (s||'carta').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,'') || 'carta';
   }
 
+  function isBlank(canvas){
+    const ctx = canvas.getContext('2d');
+    const data = ctx.getImageData(0,0,canvas.width,canvas.height).data;
+    for(let i=3; i<data.length; i+=4){ if(data[i] !== 0) return false; }
+    return true;
+  }
+
+  function triggerDownload(canvas){
+    const link = document.createElement('a');
+    link.download = slugify(el('model').value) + '.png';
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+    el('status').textContent = 'Imagen descargada.';
+  }
+
   el('downloadBtn').addEventListener('click', ()=>{
     if(!window.html2canvas){ el('status').textContent = 'La librería aún está cargando, intenta de nuevo en un momento.'; return; }
-    html2canvas(el('previewCard'), {backgroundColor:null, scale:3}).then(function(canvas){
-      const link = document.createElement('a');
-      link.download = slugify(el('model').value) + '.png';
-      link.href = canvas.toDataURL('image/png');
-      link.click();
-      el('status').textContent = 'Imagen descargada.';
+    html2canvas(el('previewCard'), {backgroundColor:null, scale:3, useCORS:true, foreignObjectRendering:true, imageTimeout:0}).then(function(canvas){
+      if(isBlank(canvas)){
+        return html2canvas(el('previewCard'), {backgroundColor:null, scale:3, useCORS:true, foreignObjectRendering:false, imageTimeout:0}).then(triggerDownload);
+      }
+      triggerDownload(canvas);
+    }).catch(function(){
+      html2canvas(el('previewCard'), {backgroundColor:null, scale:3, useCORS:true, foreignObjectRendering:false, imageTimeout:0}).then(triggerDownload);
     });
   });
 
