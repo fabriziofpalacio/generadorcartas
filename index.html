@@ -14,6 +14,9 @@
     --gl-green:#0a5c36; --gl-lime:#8fd14f;
     --mj-purple:#5b2a86; --mj-pink:#e94f9c;
     --premium-gold:#d4af37; --premium-gold-light:#f5d67d; --premium-text:#2b2106;
+    --tier2-a:#4caf6f; --tier2-b:#8ee6ab; --tier2-text:#0b2412;
+    --tier3-a:#3b82f6; --tier3-b:#93c5fd; --tier3-text:#0b1f3f;
+    --tier4-a:#8b5cf6; --tier4-b:#c4b5fd; --tier4-text:#221238;
 
     --surface-2:#ffffff; --surface-1:#f4f3f0; --surface-0:#eceae4;
     --text-primary:#1a1a1a; --text-secondary:#65635c; --text-muted:#9c998f;
@@ -107,6 +110,18 @@
   .card.premium .card-inner { border-color: var(--premium-gold); box-shadow: 0 0 18px rgba(212,175,55,.55), inset 0 0 24px rgba(212,175,55,.08); }
   .card.premium .card-logo { background: linear-gradient(135deg, var(--premium-gold), var(--premium-gold-light)); color: var(--premium-text); }
   .card.premium .card-footer { background: linear-gradient(135deg, var(--premium-gold), var(--premium-gold-light)); color: var(--premium-text); }
+
+  .card.tier2 .card-inner { border-color: var(--tier2-a); box-shadow: 0 0 10px rgba(76,175,111,.4); }
+  .card.tier2 .card-logo { background: linear-gradient(135deg, var(--tier2-a), var(--tier2-b)); color: var(--tier2-text); }
+  .card.tier2 .card-footer { background: linear-gradient(135deg, var(--tier2-a), var(--tier2-b)); color: var(--tier2-text); }
+
+  .card.tier3 .card-inner { border-color: var(--tier3-a); box-shadow: 0 0 13px rgba(59,130,246,.45); }
+  .card.tier3 .card-logo { background: linear-gradient(135deg, var(--tier3-a), var(--tier3-b)); color: var(--tier3-text); }
+  .card.tier3 .card-footer { background: linear-gradient(135deg, var(--tier3-a), var(--tier3-b)); color: var(--tier3-text); }
+
+  .card.tier4 .card-inner { border-color: var(--tier4-a); box-shadow: 0 0 15px rgba(139,92,246,.5); }
+  .card.tier4 .card-logo { background: linear-gradient(135deg, var(--tier4-a), var(--tier4-b)); color: var(--tier4-text); }
+  .card.tier4 .card-footer { background: linear-gradient(135deg, var(--tier4-a), var(--tier4-b)); color: var(--tier4-text); }
 
   .status { font-size:12px; color:var(--text-muted); text-align:center; margin-top:8px; min-height:16px; }
 </style>
@@ -274,7 +289,8 @@
     const theme = opt.dataset.theme || 'gen';
     const card = el('previewCard');
     const rarity = parseInt(starPicker.dataset.value) || 0;
-    card.className = 'card ' + theme + (rarity === 5 ? ' premium' : '');
+    const tierClass = rarity === 5 ? ' premium' : (rarity >= 2 ? ' tier'+rarity : '');
+    card.className = 'card ' + theme + tierClass;
     el('pv-brandtag').textContent = brandName;
     el('pv-model').textContent = el('model').value || 'Nombre del modelo';
     el('pv-color').textContent = el('color').value || '-';
@@ -386,7 +402,13 @@
     const innerX=10, innerY=10, innerW=280, innerH=380, radius=12;
     const contentX = innerX+10, contentW = innerW-20;
     const rarity = parseInt(el('starPicker').dataset.value) || 0;
-    const isPremium = rarity === 5;
+    const TIER_STYLES = {
+      2: { c1:'#4caf6f', c2:'#8ee6ab', text:'#0b2412', glow:'rgba(76,175,111,0.4)',  blur:8  },
+      3: { c1:'#3b82f6', c2:'#93c5fd', text:'#0b1f3f', glow:'rgba(59,130,246,0.45)', blur:10 },
+      4: { c1:'#8b5cf6', c2:'#c4b5fd', text:'#221238', glow:'rgba(139,92,246,0.5)', blur:11 },
+      5: { c1:'#d4af37', c2:'#f5d67d', text:'#2b2106', glow:'rgba(212,175,55,0.6)', blur:12 }
+    };
+    const tierStyle = TIER_STYLES[rarity] || null;
 
     // card background + border
     roundRectPath(ctx, innerX, innerY, innerW, innerH, radius);
@@ -394,11 +416,11 @@
     grad.addColorStop(0, t.bgTop); grad.addColorStop(1, t.bgBottom);
     ctx.fillStyle = grad; ctx.fill();
     ctx.lineWidth = 2;
-    if(isPremium){
+    if(tierStyle){
       const goldBorder = ctx.createLinearGradient(innerX, innerY, innerX+innerW, innerY+innerH);
-      goldBorder.addColorStop(0, '#d4af37'); goldBorder.addColorStop(1, '#f5d67d');
+      goldBorder.addColorStop(0, tierStyle.c1); goldBorder.addColorStop(1, tierStyle.c2);
       ctx.strokeStyle = goldBorder;
-      ctx.shadowColor = 'rgba(212,175,55,0.6)'; ctx.shadowBlur = 12;
+      ctx.shadowColor = tierStyle.glow; ctx.shadowBlur = tierStyle.blur;
     } else {
       ctx.strokeStyle = t.border;
     }
@@ -424,11 +446,11 @@
     const pillW = ctx.measureText(brandName).width + pillPadX*2;
     const pillX = innerX+innerW-10-pillW, pillY = innerY+6;
     roundRectPath(ctx, pillX, pillY, pillW, pillH, pillH/2);
-    if(isPremium){
+    if(tierStyle){
       const goldPill = ctx.createLinearGradient(pillX, pillY, pillX+pillW, pillY+pillH);
-      goldPill.addColorStop(0, '#d4af37'); goldPill.addColorStop(1, '#f5d67d');
+      goldPill.addColorStop(0, tierStyle.c1); goldPill.addColorStop(1, tierStyle.c2);
       ctx.fillStyle = goldPill; ctx.fill();
-      ctx.fillStyle = '#2b2106';
+      ctx.fillStyle = tierStyle.text;
     } else {
       ctx.fillStyle = t.logoBg; ctx.fill();
       ctx.fillStyle = t.logoText;
@@ -515,11 +537,11 @@
     // footer
     const footerY = statsY+rowH*2+rowGap+6, footerH = 22;
     roundRectPath(ctx, contentX, footerY, contentW, footerH, footerH/2);
-    if(isPremium){
+    if(tierStyle){
       const goldFooter = ctx.createLinearGradient(contentX, footerY, contentX+contentW, footerY+footerH);
-      goldFooter.addColorStop(0, '#d4af37'); goldFooter.addColorStop(1, '#f5d67d');
+      goldFooter.addColorStop(0, tierStyle.c1); goldFooter.addColorStop(1, tierStyle.c2);
       ctx.fillStyle = goldFooter; ctx.fill();
-      ctx.fillStyle = '#2b2106';
+      ctx.fillStyle = tierStyle.text;
     } else {
       ctx.fillStyle = t.footerBg; ctx.fill();
       ctx.fillStyle = t.footerText;
