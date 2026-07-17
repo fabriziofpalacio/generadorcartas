@@ -61,6 +61,9 @@
   .card-fact .ftitle { font-family:'Rajdhani',sans-serif; font-size:11px; letter-spacing:.08em; font-weight:600; margin-bottom:4px; text-transform:uppercase; }
   .card-fact ul { list-style:none; margin:0; padding:0; }
   .card-fact li { font-family:'Rajdhani',sans-serif; color:#e8e8e8; font-size:14px; font-weight:600; padding:1px 0; }
+  .star-picker { display:flex; gap:4px; }
+  .star-picker i { font-size:24px; color:var(--border-strong); cursor:pointer; }
+  .star-picker i.active { color:#ffb400; }
   .card-stats { margin:0 10px; display:flex; flex-direction:column; gap:3px; }
   .card-stats .stat { font-family:'Rajdhani',sans-serif; border-radius:5px; padding:3px 8px; display:flex; justify-content:space-between; font-size:11px; font-weight:600; letter-spacing:.02em; }
   .card-footer { font-family:'Rajdhani',sans-serif; margin:8px 10px 10px; border-radius:20px; padding:4px 10px; font-size:11px; font-weight:600; letter-spacing:.04em; text-align:center; text-transform:uppercase; }
@@ -181,6 +184,17 @@
       </div>
       <div class="field"><label>Serie</label><input id="series" placeholder="MBX Road Trip"></div>
 
+      <div class="field">
+        <label>Rareza (qué tan difícil fue conseguirlo)</label>
+        <div class="star-picker" id="starPicker" data-value="3">
+          <i class="ti ti-star-filled star" data-v="1"></i>
+          <i class="ti ti-star-filled star" data-v="2"></i>
+          <i class="ti ti-star-filled star" data-v="3"></i>
+          <i class="ti ti-star-filled star" data-v="4"></i>
+          <i class="ti ti-star-filled star" data-v="5"></i>
+        </div>
+      </div>
+
       <div class="row2">
         <div class="field"><label>Velocidad top (km/h)</label><input id="topspeed" placeholder="190"></div>
         <div class="field"><label>Motor</label><input id="engine" placeholder="2.5L"></div>
@@ -208,6 +222,7 @@
               <li>Color: <span id="pv-color">-</span></li>
               <li>Año: <span id="pv-year">-</span></li>
               <li>Serie: <span id="pv-series">-</span></li>
+                <li>Rareza: <span id="pv-rarity">★★★☆☆</span></li>
             </ul>
           </div>
           <div class="card-stats">
@@ -229,6 +244,24 @@
   let currentImage = null;
   const el = id => document.getElementById(id);
 
+  function starsString(n){
+    n = Math.max(0, Math.min(5, parseInt(n)||0));
+    return '★★★★★'.slice(0,n) + '☆☆☆☆☆'.slice(0,5-n);
+  }
+
+  const starPicker = el('starPicker');
+  function setStars(v){
+    starPicker.dataset.value = v;
+    starPicker.querySelectorAll('.star').forEach(s=>{
+      s.classList.toggle('active', parseInt(s.dataset.v) <= v);
+    });
+    updatePreview();
+  }
+  starPicker.querySelectorAll('.star').forEach(s=>{
+    s.addEventListener('click', ()=> setStars(parseInt(s.dataset.v)));
+  });
+  setStars(3);
+
   function updatePreview(){
     const select = el('brand');
     const opt = select.options[select.selectedIndex];
@@ -242,6 +275,7 @@
     el('pv-year').textContent = el('year').value || '-';
     el('pv-series').textContent = el('series').value || '-';
     el('pv-series-top').textContent = el('series').value || 'Serie';
+    el('pv-rarity').textContent = starsString(starPicker.dataset.value);
     el('pv-topspeed').textContent = el('topspeed').value || '-';
     el('pv-engine').textContent = el('engine').value || '-';
     const photo = el('pv-photo');
@@ -288,6 +322,7 @@
     ['model','color','year','series','topspeed','engine'].forEach(id=> el(id).value='');
     el('imgDropLabel').textContent = 'Subir imagen';
     el('status').textContent = '';
+    setStars(3);
     updatePreview();
   });
 
@@ -378,7 +413,7 @@
     ctx.textAlign = 'left'; ctx.textBaseline = 'top';
 
     // photo box
-    const photoY = 54, photoH = 118;
+    const photoY = 54, photoH = 108;
     roundRectPath(ctx, contentX, photoY, contentW, photoH, 8);
     ctx.fillStyle = '#ffffff'; ctx.fill();
     if(currentImage){
@@ -415,7 +450,7 @@
     ctx.shadowColor='transparent'; ctx.shadowBlur=0; ctx.shadowOffsetY=0;
 
     // fact box
-    const factY = titleY+44+6, factH = 75;
+    const factY = titleY+44+2, factH = 91;
     roundRectPath(ctx, contentX, factY, contentW, factH, 8);
     ctx.fillStyle = 'rgba(255,255,255,0.06)'; ctx.fill();
 
@@ -428,6 +463,8 @@
     ctx.fillText('Color: '+(color||'-'), contentX+10, factY+24);
     ctx.fillText('Año: '+(year||'-'), contentX+10, factY+40);
     ctx.fillText('Serie: '+(series||'-'), contentX+10, factY+56);
+    ctx.fillStyle = '#ffb400';
+    ctx.fillText('Rareza: '+starsString(el('starPicker').dataset.value), contentX+10, factY+72);
 
     // stats
     const statsY = factY+factH+8, rowH = 22, rowGap = 3;
@@ -451,7 +488,7 @@
     drawStat(statsY+rowH+rowGap, 'MOTOR', engine);
 
     // footer
-    const footerY = statsY+rowH*2+rowGap+8, footerH = 22;
+    const footerY = statsY+rowH*2+rowGap+6, footerH = 22;
     roundRectPath(ctx, contentX, footerY, contentW, footerH, footerH/2);
     ctx.fillStyle = t.footerBg; ctx.fill();
     ctx.fillStyle = t.footerText;
