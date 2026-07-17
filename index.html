@@ -54,7 +54,7 @@
   .card-brandline .eyebrow { font-family:'Rajdhani',sans-serif; font-size:10px; letter-spacing:.08em; opacity:.85; font-weight:600; text-transform:uppercase; }
   .card-brandline .model-line { font-family:'Rajdhani',sans-serif; font-size:12px; font-weight:600; margin-top:1px; }
   .card-logo { font-family:'Rajdhani',sans-serif; font-size:12px; font-weight:600; padding:2px 8px; border-radius:20px; background:rgba(255,255,255,.15); color:#fff; letter-spacing:.02em; }
-  .card-photo { margin:4px 10px; border-radius:8px; background-color:#fff; background-size:contain; background-position:center; background-repeat:no-repeat; height:38%; display:flex; align-items:center; justify-content:center; overflow:hidden; }
+  .card-photo { margin:4px 10px; border-radius:8px; background-color:#fff; background-size:cover; background-position:center; background-repeat:no-repeat; height:38%; display:flex; align-items:center; justify-content:center; overflow:hidden; }
   .card-photo .noimg { font-size:11px; color:#999; }
   .card-title { color:#fff; font-family:'Teko',sans-serif; font-size:44px; font-weight:600; padding:0 12px 6px; line-height:0.95; letter-spacing:.01em; text-transform:uppercase; }
   .card-fact { margin:0 10px 8px; background:rgba(255,255,255,.06); border-radius:8px; padding:8px 10px; flex:1; }
@@ -387,7 +387,7 @@
         ctx.save();
         roundRectPath(ctx, contentX, photoY, contentW, photoH, 8);
         ctx.clip();
-        const s = Math.min(contentW/img.naturalWidth, photoH/img.naturalHeight);
+        const s = Math.max(contentW/img.naturalWidth, photoH/img.naturalHeight);
         const dw = img.naturalWidth*s, dh = img.naturalHeight*s;
         ctx.drawImage(img, contentX+(contentW-dw)/2, photoY+(photoH-dh)/2, dw, dh);
         ctx.restore();
