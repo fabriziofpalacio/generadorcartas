@@ -13,6 +13,7 @@
     --mb-red:#c8102e; --mb-yellow:#ffcf00;
     --gl-green:#0a5c36; --gl-lime:#8fd14f;
     --mj-purple:#5b2a86; --mj-pink:#e94f9c;
+    --premium-gold:#d4af37; --premium-gold-light:#f5d67d; --premium-text:#2b2106;
 
     --surface-2:#ffffff; --surface-1:#f4f3f0; --surface-0:#eceae4;
     --text-primary:#1a1a1a; --text-secondary:#65635c; --text-muted:#9c998f;
@@ -102,6 +103,10 @@
   .card.gen .card-logo { background: #4a4e54; color:#fff; }
   .card.gen .card-stats .stat { background:rgba(255,255,255,.06); color:#fff; border-left:2px solid #9aa0a6; }
   .card.gen .card-footer { background: #4a4e54; color:#fff; }
+
+  .card.premium .card-inner { border-color: var(--premium-gold); box-shadow: 0 0 18px rgba(212,175,55,.55), inset 0 0 24px rgba(212,175,55,.08); }
+  .card.premium .card-logo { background: linear-gradient(135deg, var(--premium-gold), var(--premium-gold-light)); color: var(--premium-text); }
+  .card.premium .card-footer { background: linear-gradient(135deg, var(--premium-gold), var(--premium-gold-light)); color: var(--premium-text); }
 
   .status { font-size:12px; color:var(--text-muted); text-align:center; margin-top:8px; min-height:16px; }
 </style>
@@ -268,7 +273,8 @@
     const brandName = opt.value;
     const theme = opt.dataset.theme || 'gen';
     const card = el('previewCard');
-    card.className = 'card ' + theme;
+    const rarity = parseInt(starPicker.dataset.value) || 0;
+    card.className = 'card ' + theme + (rarity === 5 ? ' premium' : '');
     el('pv-brandtag').textContent = brandName;
     el('pv-model').textContent = el('model').value || 'Nombre del modelo';
     el('pv-color').textContent = el('color').value || '-';
@@ -379,13 +385,25 @@
 
     const innerX=10, innerY=10, innerW=280, innerH=380, radius=12;
     const contentX = innerX+10, contentW = innerW-20;
+    const rarity = parseInt(el('starPicker').dataset.value) || 0;
+    const isPremium = rarity === 5;
 
     // card background + border
     roundRectPath(ctx, innerX, innerY, innerW, innerH, radius);
     const grad = ctx.createLinearGradient(0, innerY, 0, innerY+innerH);
     grad.addColorStop(0, t.bgTop); grad.addColorStop(1, t.bgBottom);
     ctx.fillStyle = grad; ctx.fill();
-    ctx.lineWidth = 2; ctx.strokeStyle = t.border; ctx.stroke();
+    ctx.lineWidth = 2;
+    if(isPremium){
+      const goldBorder = ctx.createLinearGradient(innerX, innerY, innerX+innerW, innerY+innerH);
+      goldBorder.addColorStop(0, '#d4af37'); goldBorder.addColorStop(1, '#f5d67d');
+      ctx.strokeStyle = goldBorder;
+      ctx.shadowColor = 'rgba(212,175,55,0.6)'; ctx.shadowBlur = 12;
+    } else {
+      ctx.strokeStyle = t.border;
+    }
+    ctx.stroke();
+    ctx.shadowColor = 'transparent'; ctx.shadowBlur = 0;
 
     ctx.save();
     roundRectPath(ctx, innerX, innerY, innerW, innerH, radius);
@@ -406,8 +424,15 @@
     const pillW = ctx.measureText(brandName).width + pillPadX*2;
     const pillX = innerX+innerW-10-pillW, pillY = innerY+6;
     roundRectPath(ctx, pillX, pillY, pillW, pillH, pillH/2);
-    ctx.fillStyle = t.logoBg; ctx.fill();
-    ctx.fillStyle = t.logoText;
+    if(isPremium){
+      const goldPill = ctx.createLinearGradient(pillX, pillY, pillX+pillW, pillY+pillH);
+      goldPill.addColorStop(0, '#d4af37'); goldPill.addColorStop(1, '#f5d67d');
+      ctx.fillStyle = goldPill; ctx.fill();
+      ctx.fillStyle = '#2b2106';
+    } else {
+      ctx.fillStyle = t.logoBg; ctx.fill();
+      ctx.fillStyle = t.logoText;
+    }
     ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
     ctx.fillText(brandName, pillX+pillW/2, pillY+pillH/2+1);
     ctx.textAlign = 'left'; ctx.textBaseline = 'top';
@@ -490,8 +515,15 @@
     // footer
     const footerY = statsY+rowH*2+rowGap+6, footerH = 22;
     roundRectPath(ctx, contentX, footerY, contentW, footerH, footerH/2);
-    ctx.fillStyle = t.footerBg; ctx.fill();
-    ctx.fillStyle = t.footerText;
+    if(isPremium){
+      const goldFooter = ctx.createLinearGradient(contentX, footerY, contentX+contentW, footerY+footerH);
+      goldFooter.addColorStop(0, '#d4af37'); goldFooter.addColorStop(1, '#f5d67d');
+      ctx.fillStyle = goldFooter; ctx.fill();
+      ctx.fillStyle = '#2b2106';
+    } else {
+      ctx.fillStyle = t.footerBg; ctx.fill();
+      ctx.fillStyle = t.footerText;
+    }
     ctx.font = "700 11px 'Rajdhani', sans-serif";
     ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
     ctx.fillText('MI COLECCIÓN', contentX+contentW/2, footerY+footerH/2+1);
