@@ -7,7 +7,6 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Teko:wght@500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tabler-icons/2.44.0/iconfont/tabler-icons.min.css">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <style>
   :root{
     --hw-black:#0d0d0d; --hw-black2:#1a1a1a; --hw-red:#e2231a; --hw-yellow:#ffd23f;
@@ -296,31 +295,187 @@
     return (s||'carta').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,'') || 'carta';
   }
 
-  function isBlank(canvas){
+  const THEMES = {
+    hw:  { bgTop:'#1a1a1a', bgBottom:'#0d0d0d', border:'#e2231a', eyebrow:'#e2231a', title:'#ffd23f', titleShadow:true,  logoBg:'#e2231a', logoText:'#ffffff', statBg:'rgba(255,255,255,0.06)', statBorderLeft:'#e2231a', statText:'#ffffff', footerBg:'#e2231a', footerText:'#ffffff' },
+    mb:  { bgTop:'#141414', bgBottom:'#141414', border:'#c8102e', eyebrow:'#ffcf00', title:'#ffffff', titleShadow:false, logoBg:'#c8102e', logoText:'#ffffff', statBg:'rgba(200,16,46,0.35)', statBorderLeft:null,      statText:'#ffcf00', footerBg:'#c8102e', footerText:'#ffffff' },
+    gl:  { bgTop:'#0c1c13', bgBottom:'#0c1c13', border:'#8fd14f', eyebrow:'#8fd14f', title:'#ffffff', titleShadow:false, logoBg:'#0a5c36', logoText:'#ffffff', statBg:'rgba(10,92,54,0.4)',   statBorderLeft:null,      statText:'#8fd14f', footerBg:'#0a5c36', footerText:'#ffffff' },
+    mj:  { bgTop:'#1a0f2b', bgBottom:'#1a0f2b', border:'#e94f9c', eyebrow:'#e94f9c', title:'#ffffff', titleShadow:false, logoBg:'#5b2a86', logoText:'#ffffff', statBg:'rgba(91,42,134,0.4)',  statBorderLeft:null,      statText:'#f0c9e6', footerBg:'#5b2a86', footerText:'#ffffff' },
+    gen: { bgTop:'#2b2d30', bgBottom:'#131416', border:'#9aa0a6', eyebrow:'#c7ccd1', title:'#ffffff', titleShadow:false, logoBg:'#4a4e54', logoText:'#ffffff', statBg:'rgba(255,255,255,0.06)', statBorderLeft:'#9aa0a6', statText:'#ffffff', footerBg:'#4a4e54', footerText:'#ffffff' }
+  };
+
+  function roundRectPath(ctx,x,y,w,h,r){
+    ctx.beginPath();
+    ctx.moveTo(x+r,y);
+    ctx.arcTo(x+w,y,x+w,y+h,r);
+    ctx.arcTo(x+w,y+h,x,y+h,r);
+    ctx.arcTo(x,y+h,x,y,r);
+    ctx.arcTo(x,y,x+w,y,r);
+    ctx.closePath();
+  }
+
+  async function renderCard(){
+    const SCALE = 4;
+    const W = 300, H = 400;
+    const canvas = document.createElement('canvas');
+    canvas.width = W*SCALE; canvas.height = H*SCALE;
     const ctx = canvas.getContext('2d');
-    const data = ctx.getImageData(0,0,canvas.width,canvas.height).data;
-    for(let i=3; i<data.length; i+=4){ if(data[i] !== 0) return false; }
-    return true;
-  }
+    ctx.scale(SCALE, SCALE);
 
-  function triggerDownload(canvas){
-    const link = document.createElement('a');
-    link.download = slugify(el('model').value) + '.png';
-    link.href = canvas.toDataURL('image/png');
-    link.click();
-    el('status').textContent = 'Imagen descargada.';
-  }
+    try {
+      await Promise.all([
+        document.fonts.load("600 44px 'Teko'"),
+        document.fonts.load("700 12px 'Rajdhani'"),
+        document.fonts.load("600 12px 'Rajdhani'")
+      ]);
+      await document.fonts.ready;
+    } catch(e){}
 
-  el('downloadBtn').addEventListener('click', ()=>{
-    if(!window.html2canvas){ el('status').textContent = 'La librería aún está cargando, intenta de nuevo en un momento.'; return; }
-    html2canvas(el('previewCard'), {backgroundColor:null, scale:3, useCORS:true, foreignObjectRendering:true, imageTimeout:0}).then(function(canvas){
-      if(isBlank(canvas)){
-        return html2canvas(el('previewCard'), {backgroundColor:null, scale:3, useCORS:true, foreignObjectRendering:false, imageTimeout:0}).then(triggerDownload);
+    const select = el('brand');
+    const opt = select.options[select.selectedIndex];
+    const brandName = opt.value;
+    const t = THEMES[opt.dataset.theme || 'gen'];
+
+    const model = el('model').value || 'Nombre del modelo';
+    const color = el('color').value;
+    const year = el('year').value;
+    const series = el('series').value;
+    const topspeed = el('topspeed').value;
+    const engine = el('engine').value;
+
+    const innerX=10, innerY=10, innerW=280, innerH=380, radius=12;
+    const contentX = innerX+10, contentW = innerW-20;
+
+    // card background + border
+    roundRectPath(ctx, innerX, innerY, innerW, innerH, radius);
+    const grad = ctx.createLinearGradient(0, innerY, 0, innerY+innerH);
+    grad.addColorStop(0, t.bgTop); grad.addColorStop(1, t.bgBottom);
+    ctx.fillStyle = grad; ctx.fill();
+    ctx.lineWidth = 2; ctx.strokeStyle = t.border; ctx.stroke();
+
+    ctx.save();
+    roundRectPath(ctx, innerX, innerY, innerW, innerH, radius);
+    ctx.clip();
+
+    // topbar
+    ctx.textBaseline = 'top'; ctx.textAlign = 'left';
+    ctx.fillStyle = t.eyebrow;
+    ctx.font = "600 9px 'Rajdhani', sans-serif";
+    ctx.fillText('FICHA DE COLECCIÓN', contentX, innerY+8);
+
+    ctx.fillStyle = '#ffffff';
+    ctx.font = "600 11px 'Rajdhani', sans-serif";
+    ctx.fillText(series || 'Serie', contentX, innerY+20);
+
+    ctx.font = "600 11px 'Rajdhani', sans-serif";
+    const pillPadX = 8, pillH = 18;
+    const pillW = ctx.measureText(brandName).width + pillPadX*2;
+    const pillX = innerX+innerW-10-pillW, pillY = innerY+6;
+    roundRectPath(ctx, pillX, pillY, pillW, pillH, pillH/2);
+    ctx.fillStyle = t.logoBg; ctx.fill();
+    ctx.fillStyle = t.logoText;
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillText(brandName, pillX+pillW/2, pillY+pillH/2+1);
+    ctx.textAlign = 'left'; ctx.textBaseline = 'top';
+
+    // photo box
+    const photoY = 54, photoH = 118;
+    roundRectPath(ctx, contentX, photoY, contentW, photoH, 8);
+    ctx.fillStyle = '#ffffff'; ctx.fill();
+    if(currentImage){
+      try {
+        const img = await new Promise((res,rej)=>{ const im=new Image(); im.onload=()=>res(im); im.onerror=rej; im.src=currentImage; });
+        ctx.save();
+        roundRectPath(ctx, contentX, photoY, contentW, photoH, 8);
+        ctx.clip();
+        const s = Math.min(contentW/img.naturalWidth, photoH/img.naturalHeight);
+        const dw = img.naturalWidth*s, dh = img.naturalHeight*s;
+        ctx.drawImage(img, contentX+(contentW-dw)/2, photoY+(photoH-dh)/2, dw, dh);
+        ctx.restore();
+      } catch(e){}
+    } else {
+      ctx.fillStyle = '#999999';
+      ctx.font = "11px 'Rajdhani', sans-serif";
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.fillText('Sin imagen', contentX+contentW/2, photoY+photoH/2);
+      ctx.textAlign = 'left'; ctx.textBaseline = 'top';
+    }
+
+    // title (auto-shrink to fit width)
+    const titleY = photoY+photoH+8;
+    const modelText = model.toUpperCase();
+    let titleSize = 44;
+    ctx.font = `600 ${titleSize}px 'Teko', sans-serif`;
+    while(ctx.measureText(modelText).width > contentW && titleSize > 22){
+      titleSize -= 2;
+      ctx.font = `600 ${titleSize}px 'Teko', sans-serif`;
+    }
+    if(t.titleShadow){ ctx.shadowColor='rgba(0,0,0,0.5)'; ctx.shadowBlur=3; ctx.shadowOffsetY=1; }
+    ctx.fillStyle = t.title;
+    ctx.fillText(modelText, contentX, titleY);
+    ctx.shadowColor='transparent'; ctx.shadowBlur=0; ctx.shadowOffsetY=0;
+
+    // fact box
+    const factY = titleY+44+6, factH = 75;
+    roundRectPath(ctx, contentX, factY, contentW, factH, 8);
+    ctx.fillStyle = 'rgba(255,255,255,0.06)'; ctx.fill();
+
+    ctx.fillStyle = t.eyebrow;
+    ctx.font = "700 10px 'Rajdhani', sans-serif";
+    ctx.fillText('FICHA TÉCNICA', contentX+10, factY+8);
+
+    ctx.fillStyle = '#e8e8e8';
+    ctx.font = "600 13px 'Rajdhani', sans-serif";
+    ctx.fillText('Color: '+(color||'-'), contentX+10, factY+24);
+    ctx.fillText('Año: '+(year||'-'), contentX+10, factY+40);
+    ctx.fillText('Serie: '+(series||'-'), contentX+10, factY+56);
+
+    // stats
+    const statsY = factY+factH+8, rowH = 22, rowGap = 3;
+    function drawStat(y, label, value){
+      roundRectPath(ctx, contentX, y, contentW, rowH, 5);
+      ctx.fillStyle = t.statBg; ctx.fill();
+      if(t.statBorderLeft){
+        ctx.fillStyle = t.statBorderLeft;
+        ctx.fillRect(contentX, y, 2, rowH);
       }
-      triggerDownload(canvas);
-    }).catch(function(){
-      html2canvas(el('previewCard'), {backgroundColor:null, scale:3, useCORS:true, foreignObjectRendering:false, imageTimeout:0}).then(triggerDownload);
-    });
+      ctx.font = "600 11px 'Rajdhani', sans-serif";
+      ctx.fillStyle = t.statText;
+      ctx.textBaseline = 'middle';
+      ctx.textAlign = 'left';
+      ctx.fillText(label, contentX+8, y+rowH/2+1);
+      ctx.textAlign = 'right';
+      ctx.fillText(value||'-', contentX+contentW-8, y+rowH/2+1);
+      ctx.textAlign = 'left'; ctx.textBaseline = 'top';
+    }
+    drawStat(statsY, 'VELOCIDAD TOP (KM/H)', topspeed);
+    drawStat(statsY+rowH+rowGap, 'MOTOR', engine);
+
+    // footer
+    const footerY = statsY+rowH*2+rowGap+8, footerH = 22;
+    roundRectPath(ctx, contentX, footerY, contentW, footerH, footerH/2);
+    ctx.fillStyle = t.footerBg; ctx.fill();
+    ctx.fillStyle = t.footerText;
+    ctx.font = "700 11px 'Rajdhani', sans-serif";
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillText('MI COLECCIÓN', contentX+contentW/2, footerY+footerH/2+1);
+    ctx.textAlign = 'left'; ctx.textBaseline = 'top';
+
+    ctx.restore();
+    return canvas;
+  }
+
+  el('downloadBtn').addEventListener('click', async ()=>{
+    el('status').textContent = 'Generando imagen...';
+    try {
+      const canvas = await renderCard();
+      const link = document.createElement('a');
+      link.download = slugify(el('model').value) + '.png';
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+      el('status').textContent = 'Imagen descargada.';
+    } catch(err){
+      el('status').textContent = 'Error al generar la imagen: ' + err.message;
+    }
   });
 
   updatePreview();
