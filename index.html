@@ -63,7 +63,7 @@
   .card-title { color:#fff; font-family:'Teko',sans-serif; font-size:44px; font-weight:600; padding:0 12px 6px; line-height:0.95; letter-spacing:.01em; text-transform:uppercase; }
   .card-fact { margin:0 10px 8px; background:rgba(255,255,255,.06); border-radius:8px; padding:8px 10px; flex:1; }
   .card-review { margin:0 10px 8px; background:rgba(255,255,255,.06); border-radius:8px; padding:6px 10px 8px; }
-  .card-review #pv-review-text { font-family:'Rajdhani',sans-serif; color:#e0e0e0; font-size:12px; font-weight:500; font-style:italic; line-height:1.35; display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden; }
+  .card-review #pv-review-text { font-family:'Rajdhani',sans-serif; color:#e0e0e0; font-size:12px; font-weight:500; font-style:italic; line-height:1.35; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
   .card-fact .ftitle { font-family:'Rajdhani',sans-serif; font-size:11px; letter-spacing:.08em; font-weight:600; margin-bottom:4px; text-transform:uppercase; }
   .card-fact ul { list-style:none; margin:0; padding:0; }
   .card-fact li { font-family:'Rajdhani',sans-serif; color:#e8e8e8; font-size:14px; font-weight:600; padding:1px 0; }
@@ -473,8 +473,8 @@
     ctx.fillText(brandName, pillX+pillW/2, pillY+pillH/2+1);
     ctx.textAlign = 'left'; ctx.textBaseline = 'top';
 
-    // photo box
-    const photoY = 54, photoH = hasReview ? 84 : 108;
+    // photo box (always the same size — never shrinks, regardless of review text)
+    const photoY = 54, photoH = 108;
     roundRectPath(ctx, contentX, photoY, contentW, photoH, 8);
     ctx.fillStyle = '#ffffff'; ctx.fill();
     if(currentImage){
@@ -510,58 +510,49 @@
     ctx.fillText(modelText, contentX, titleY);
     ctx.shadowColor='transparent'; ctx.shadowBlur=0; ctx.shadowOffsetY=0;
 
-    // fact box
-    const factY = titleY + 44 + (hasReview ? 1 : 2), factH = hasReview ? 62 : 91;
+    // fact box — text compresses (smaller line spacing) to make room for the review box below, if present
+    const factY = titleY + 44 + 2;
+    const factH = hasReview ? 56 : 91;
     roundRectPath(ctx, contentX, factY, contentW, factH, 8);
     ctx.fillStyle = 'rgba(255,255,255,0.06)'; ctx.fill();
 
     ctx.fillStyle = t.eyebrow;
     ctx.font = "700 10px 'Rajdhani', sans-serif";
-    ctx.fillText('FICHA TÉCNICA', contentX+10, factY+8);
+    ctx.fillText('FICHA TÉCNICA', contentX+10, factY+7);
 
-    const lineStep = hasReview ? 11 : 16;
-    const lineFont = hasReview ? "600 11px 'Rajdhani', sans-serif" : "600 13px 'Rajdhani', sans-serif";
+    const lineStep = hasReview ? 10 : 16;
+    const lineFont = hasReview ? "600 10px 'Rajdhani', sans-serif" : "600 13px 'Rajdhani', sans-serif";
     ctx.fillStyle = '#e8e8e8';
     ctx.font = lineFont;
-    ctx.fillText('Color: '+(color||'-'), contentX+10, factY+8+lineStep);
-    ctx.fillText('Año: '+(year||'-'), contentX+10, factY+8+lineStep*2);
-    ctx.fillText('Serie: '+(series||'-'), contentX+10, factY+8+lineStep*3);
+    ctx.fillText('Color: '+(color||'-'), contentX+10, factY+7+lineStep);
+    ctx.fillText('Año: '+(year||'-'), contentX+10, factY+7+lineStep*2);
+    ctx.fillText('Serie: '+(series||'-'), contentX+10, factY+7+lineStep*3);
     ctx.fillStyle = '#ffb400';
-    ctx.fillText('Rareza: '+starsString(el('starPicker').dataset.value), contentX+10, factY+8+lineStep*4);
+    ctx.fillText('Rareza: '+starsString(el('starPicker').dataset.value), contentX+10, factY+7+lineStep*4);
 
-    // review box (only if present)
-    let afterFactY = factY + factH + 6;
+    // review box — only if present; single truncated line so it always fits without touching the photo
+    let afterFactY = factY + factH + 2;
     if(hasReview){
-      const reviewY = afterFactY, reviewH = 50;
+      const reviewY = afterFactY, reviewH = 33;
       roundRectPath(ctx, contentX, reviewY, contentW, reviewH, 8);
       ctx.fillStyle = 'rgba(255,255,255,0.06)'; ctx.fill();
       ctx.fillStyle = t.eyebrow;
-      ctx.font = "700 10px 'Rajdhani', sans-serif";
-      ctx.fillText('RESEÑA', contentX+10, reviewY+7);
+      ctx.font = "700 9px 'Rajdhani', sans-serif";
+      ctx.fillText('RESEÑA', contentX+10, reviewY+6);
 
-      // wrap review text into up to 2 lines that fit contentW-20
-      ctx.font = "italic 500 11px 'Rajdhani', sans-serif";
+      ctx.font = "italic 500 10px 'Rajdhani', sans-serif";
       ctx.fillStyle = '#e0e0e0';
       const maxLineW = contentW - 20;
-      const words = reseñaVal.split(/\s+/);
-      const lines = [];
-      let cur = '';
-      for(const w of words){
-        const test = cur ? cur+' '+w : w;
-        if(ctx.measureText(test).width > maxLineW && cur){ lines.push(cur); cur = w; }
-        else { cur = test; }
-        if(lines.length === 2) break;
+      let line = reseñaVal;
+      if(ctx.measureText(line).width > maxLineW){
+        while(line.length > 0 && ctx.measureText(line+'…').width > maxLineW){ line = line.slice(0,-1); }
+        line += '…';
       }
-      if(lines.length < 2 && cur) lines.push(cur);
-      if(lines.length === 2){
-        let last = lines[1];
-        while(ctx.measureText(last+'…').width > maxLineW && last.length > 0){ last = last.slice(0,-1); }
-        lines[1] = last + '…';
-      }
-      lines.slice(0,2).forEach((ln,i)=> ctx.fillText(ln, contentX+10, reviewY+7+16+i*14));
+      ctx.fillText(line, contentX+10, reviewY+6+14);
 
-      afterFactY = reviewY + reviewH + 6;
+      afterFactY = reviewY + reviewH + 2;
     }
+
 
     // stats
     const statsY = afterFactY, rowH = 22, rowGap = 3;
