@@ -62,8 +62,6 @@
   .card-photo .noimg { font-size:11px; color:#999; }
   .card-title { color:#fff; font-family:'Teko',sans-serif; font-size:44px; font-weight:600; padding:0 12px 6px; line-height:0.95; letter-spacing:.01em; text-transform:uppercase; }
   .card-fact { margin:0 10px 8px; background:rgba(255,255,255,.06); border-radius:8px; padding:8px 10px; flex:1; }
-  .card-review { margin:0 10px 8px; background:rgba(255,255,255,.06); border-radius:8px; padding:6px 10px 8px; }
-  .card-review #pv-review-text { font-family:'Rajdhani',sans-serif; color:#e0e0e0; font-size:12px; font-weight:500; font-style:italic; line-height:1.35; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
   .card-fact .ftitle { font-family:'Rajdhani',sans-serif; font-size:11px; letter-spacing:.08em; font-weight:600; margin-bottom:4px; text-transform:uppercase; }
   .card-fact ul { list-style:none; margin:0; padding:0; }
   .card-fact li { font-family:'Rajdhani',sans-serif; color:#e8e8e8; font-size:14px; font-weight:600; padding:1px 0; }
@@ -198,8 +196,7 @@
       <div class="field">
         <label>Nombre del modelo</label>
         <input id="model" placeholder="'16 Mazda CX-5">
-        <label style="margin-top:10px; display:block;">Reseña (opcional)</label>
-        <textarea id="reseña" rows="4" placeholder="Escribe o pega aquí una breve reseña del vehículo..." style="width:100%; padding:8px 10px; border:0.5px solid var(--border); border-radius:var(--radius); background:var(--surface-2); color:var(--text-primary); font-family:var(--font-sans); resize:vertical;"></textarea>      </div>
+      </div>
 
       <div class="row2">
         <div class="field"><label>Color</label><input id="color" placeholder="Gris"></div>
@@ -252,10 +249,6 @@
             <div class="stat"><span>VELOCIDAD TOP (KM/H)</span><span id="pv-topspeed">-</span></div>
             <div class="stat"><span>MOTOR</span><span id="pv-engine">-</span></div>
           </div>
-          <div class="card-review" id="pv-review-block" style="display:none;">
-            <div class="ftitle">RESEÑA</div>
-            <div id="pv-review-text"></div>
-          </div>
           <div class="card-footer">MI COLECCIÓN</div>
         </div>
       </div>
@@ -307,9 +300,6 @@
     el('pv-rarity').textContent = starsString(starPicker.dataset.value);
     el('pv-topspeed').textContent = el('topspeed').value || '-';
     el('pv-engine').textContent = el('engine').value || '-';
-    const reseñaVal = el('reseña').value.trim();
-    el('pv-review-block').style.display = reseñaVal ? 'block' : 'none';
-    el('pv-review-text').textContent = reseñaVal;
     const photo = el('pv-photo');
     if(currentImage){
       photo.style.backgroundImage = 'url(' + currentImage + ')';
@@ -320,7 +310,7 @@
     }
   }
 
-  ['brand','model','color','year','series','topspeed','engine','reseña'].forEach(id=>{
+  ['brand','model','color','year','series','topspeed','engine'].forEach(id=>{
     el(id).addEventListener('input', updatePreview);
     el(id).addEventListener('change', updatePreview);
   });
