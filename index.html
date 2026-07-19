@@ -196,7 +196,8 @@
       <div class="field">
         <label>Nombre del modelo</label>
         <input id="model" placeholder="'16 Mazda CX-5">
-      </div>
+        <label style="margin-top:10px; display:block;">Reseña (opcional)</label>
+        <textarea id="reseña" rows="4" placeholder="Escribe o pega aquí una breve reseña del vehículo..." style="width:100%; padding:8px 10px; border:0.5px solid var(--border); border-radius:var(--radius); background:var(--surface-2); color:var(--text-primary); font-family:var(--font-sans); resize:vertical;"></textarea>      </div>
 
       <div class="row2">
         <div class="field"><label>Color</label><input id="color" placeholder="Gris"></div>
@@ -339,11 +340,13 @@
     reader.readAsDataURL(file);
   });
 
+
   el('clearBtn').addEventListener('click', ()=>{
     currentImage = null;
     ['model','color','year','series','topspeed','engine'].forEach(id=> el(id).value='');
     el('imgDropLabel').textContent = 'Subir imagen';
     el('status').textContent = '';
+    el('reseña').value = '';
     setStars(3);
     updatePreview();
   });
