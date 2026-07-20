@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tarjeta de fondo · Repisa 1/64</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Teko:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tabler-icons/2.44.0/iconfont/tabler-icons.min.css">
+<style>
+  :root{
+    --surface-2:#ffffff; --surface-1:#f4f3f0; --surface-0:#eceae4;
+    --text-primary:#1a1a1a; --text-secondary:#65635c; --text-muted:#9c998f;
+    --border:#dedad2; --border-strong:#c7c2b7;
+    --radius:8px;
+    --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin:0; padding:0; background:var(--surface-0); color:var(--text-primary); font-family:var(--font-sans); }
+  .page { max-width:820px; margin:0 auto; padding:32px 20px 80px; }
+  .page-header { text-align:center; margin-bottom:24px; }
+  .page-header h1 { font-family:'Teko',sans-serif; font-size:40px; font-weight:600; margin:0; letter-spacing:.01em; text-transform:uppercase; }
+  .page-header p { font-size:13px; color:var(--text-secondary); margin:4px 0 0; }
+
+  input, select, button { font-family:var(--font-sans); font-size:14px; }
+  input, select { height:36px; padding:0 10px; border:0.5px solid var(--border); border-radius:var(--radius); background:var(--surface-2); color:var(--text-primary); width:100%; }
+  button { height:36px; padding:0 14px; border:0.5px solid var(--border-strong); border-radius:var(--radius); background:transparent; color:var(--text-primary); cursor:pointer; }
+  button:hover { background:var(--surface-1); }
+  button:active { transform:scale(0.98); }
+
+  .layout { display:grid; grid-template-columns: 320px 1fr; gap:24px; align-items:start; }
+  @media (max-width: 680px){ .layout{ grid-template-columns: 1fr; } }
+  .panel { background:var(--surface-2); border:0.5px solid var(--border); border-radius:12px; padding:1rem 1.25rem; }
+  .field { margin-bottom:12px; }
+  .field label { display:block; font-size:13px; color:var(--text-secondary); margin-bottom:4px; }
+  .imgdrop { border:1px dashed var(--border-strong); border-radius:var(--radius); padding:14px; text-align:center; cursor:pointer; font-size:13px; color:var(--text-secondary); }
+  .imgdrop:hover { background:var(--surface-1); }
+  .hint { font-size:12px; color:var(--text-muted); margin-top:4px; }
+
+  .previewwrap { display:flex; flex-direction:column; align-items:center; gap:14px; }
+  #downloadBtn { width:240px; }
+
+  /* preview shown at 6x actual physical size (6px per mm) so it's easy to see on screen */
+  .plate { width:480px; height:240px; background:#e9e6df; border-radius:4px; position:relative; overflow:hidden; box-shadow:0 1px 3px rgba(0,0,0,.15); background-size:cover; background-position:center; }
+  .plate .noimg { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; color:#9c998f; font-size:13px; font-family:var(--font-sans); }
+  .plate-brandtag { position:absolute; top:14px; left:14px; font-family:'Rajdhani',sans-serif; font-size:15px; font-weight:600; color:#fff; padding:3px 12px; border-radius:20px; letter-spacing:.02em; box-shadow:0 1px 4px rgba(0,0,0,.35); }
+  .plate-model { position:absolute; left:0; right:0; bottom:0; padding:10px 20px 14px; font-family:'Teko',sans-serif; font-size:44px; font-weight:600; line-height:0.95; color:#ffffff; text-transform:uppercase; text-shadow:0 2px 6px rgba(0,0,0,.7); background:linear-gradient(to top, rgba(0,0,0,.55), rgba(0,0,0,0)); }
+
+  .status { font-size:12px; color:var(--text-muted); text-align:center; margin-top:2px; min-height:16px; }
+  .dims { font-size:12px; color:var(--text-muted); }
+</style>
+</head>
+<body>
+
+<div class="page">
+  <div class="page-header">
+    <h1>Tarjeta de fondo</h1>
+    <p>Placa de exhibición para repisa · 8 × 4 cm, lista para imprimir</p>
+  </div>
+
+  <div class="layout">
+
+    <div class="panel">
+      <div class="field">
+        <label>Marca</label>
+        <select id="brand">
+          <option value="Massdi (Masdi)">Massdi (Masdi)</option>
+          <option value="JKM (Jiangsu Kuai Mei)">JKM (Jiangsu Kuai Mei)</option>
+          <option value="Time Micro (TM)">Time Micro (TM)</option>
+          <option value="CM Model">CM Model</option>
+          <option value="Xcartoys">Xcartoys</option>
+          <option value="MINI GT">MINI GT</option>
+          <option value="Kaido House">Kaido House</option>
+          <option value="Inno64 (Inno Models)">Inno64 (Inno Models)</option>
+          <option value="Tarmac Works">Tarmac Works</option>
+          <option value="Pop Race">Pop Race</option>
+          <option value="Tomica Limited Vintage (TLV / TLVN)">Tomica Limited Vintage (TLV / TLVN)</option>
+          <option value="Micro Turbo">Micro Turbo</option>
+          <option value="Hobby Japan">Hobby Japan</option>
+          <option value="Para64">Para64</option>
+          <option value="Era Car">Era Car</option>
+          <option value="Schuco">Schuco</option>
+          <option value="Kyosho">Kyosho</option>
+          <option value="BM Creations">BM Creations</option>
+          <option value="PGM (Private Goods Model)">PGM (Private Goods Model)</option>
+          <option value="Ignition Model">Ignition Model</option>
+          <option value="YM Model">YM Model</option>
+          <option value="Error 404">Error 404</option>
+          <option value="One Model">One Model</option>
+          <option value="MotorHelix">MotorHelix</option>
+          <option value="Greenlight Collectibles" data-theme="gl">Greenlight Collectibles</option>
+          <option value="Auto World">Auto World</option>
+          <option value="M2 Machines">M2 Machines</option>
+          <option value="Johnny Lightning">Johnny Lightning</option>
+          <option value="Racing Champions">Racing Champions</option>
+          <option value="Jada Toys">Jada Toys</option>
+          <option value="Hot Wheels" data-theme="hw" selected>Hot Wheels</option>
+          <option value="Matchbox" data-theme="mb">Matchbox</option>
+          <option value="Majorette" data-theme="mj">Majorette</option>
+          <option value="Tomica">Tomica</option>
+          <option value="Siku">Siku</option>
+          <option value="Welly">Welly</option>
+          <option value="Maisto">Maisto</option>
+          <option value="Bburago">Bburago</option>
+          <option value="Kinsmart">Kinsmart</option>
+          <option value="Corgi">Corgi</option>
+          <option value="First Gear">First Gear</option>
+          <option value="DCP (Diecast Promotions)">DCP (Diecast Promotions)</option>
+          <option value="Tiny">Tiny</option>
+          <option value="GCD (GainCorp Products)">GCD (GainCorp Products)</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label>Imagen de fondo</label>
+        <div class="imgdrop" id="imgDrop"><i class="ti ti-photo-plus" style="font-size:20px"></i><div id="imgDropLabel">Subir imagen</div></div>
+        <input type="file" id="imgInput" accept="image/*" style="display:none">
+        <div class="hint">La imagen se recorta para llenar toda la tarjeta (8×4 cm), sin dejar espacios en blanco.</div>
+      </div>
+
+      <div class="field">
+        <label>Nombre del modelo</label>
+        <input id="model" placeholder="'73 Jeep J10">
+      </div>
+
+      <button id="clearBtn" style="width:100%;"><i class="ti ti-refresh"></i> Limpiar</button>
+    </div>
+
+    <div class="previewwrap">
+      <div class="plate" id="plate">
+        <div class="noimg" id="noImgMsg">Sin imagen de fondo</div>
+        <div class="plate-brandtag" id="pv-brandtag">Hot Wheels</div>
+        <div class="plate-model" id="pv-model">Nombre del modelo</div>
+      </div>
+      <div class="dims">Vista previa a 6× el tamaño real (la impresión sale a 8×4 cm exactos)</div>
+      <button id="downloadBtn"><i class="ti ti-download"></i> Descargar imagen para imprimir</button>
+      <div class="status" id="status"></div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+(function(){
+  const el = id => document.getElementById(id);
+  let currentImage = null;
+
+  const THEME_COLORS = {
+    hw: '#e2231a',
+    mb: '#c8102e',
+    gl: '#0a5c36',
+    mj: '#5b2a86',
+    gen: '#5a5f66'
+  };
+
+  function updatePreview(){
+    const plate = el('plate');
+    if(currentImage){
+      plate.style.backgroundImage = 'url(' + currentImage + ')';
+      el('noImgMsg').style.display = 'none';
+    } else {
+      plate.style.backgroundImage = 'none';
+      el('noImgMsg').style.display = 'flex';
+    }
+    el('pv-model').textContent = el('model').value || 'Nombre del modelo';
+
+    const select = el('brand');
+    const opt = select.options[select.selectedIndex];
+    const themeKey = opt.dataset.theme || 'gen';
+    el('pv-brandtag').textContent = opt.value;
+    el('pv-brandtag').style.background = THEME_COLORS[themeKey];
+  }
+
+  ['brand','model'].forEach(id=> el(id).addEventListener('input', updatePreview));
+  el('brand').addEventListener('change', updatePreview);
+
+  el('imgDrop').addEventListener('click', ()=> el('imgInput').click());
+  el('imgInput').addEventListener('change', (e)=>{
+    const file = e.target.files[0];
+    if(!file) return;
+    const reader = new FileReader();
+    reader.onload = function(ev){
+      const img = new Image();
+      img.onload = function(){
+        const maxW = 1600;
+        const scale = Math.min(1, maxW / img.width);
+        const canvas = document.createElement('canvas');
+        canvas.width = img.width * scale;
+        canvas.height = img.height * scale;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        currentImage = canvas.toDataURL('image/jpeg', 0.95);
+        el('imgDropLabel').textContent = 'Imagen cargada · cambiar';
+        updatePreview();
+      };
+      img.src = ev.target.result;
+    };
+    reader.readAsDataURL(file);
+  });
+
+  el('clearBtn').addEventListener('click', ()=>{
+    currentImage = null;
+    el('model').value = '';
+    el('imgDropLabel').textContent = 'Subir imagen';
+    el('status').textContent = '';
+    updatePreview();
+  });
+
+  function roundRectPath(ctx,x,y,w,h,r){
+    ctx.beginPath();
+    ctx.moveTo(x+r,y);
+    ctx.arcTo(x+w,y,x+w,y+h,r);
+    ctx.arcTo(x+w,y+h,x,y+h,r);
+    ctx.arcTo(x,y+h,x,y,r);
+    ctx.arcTo(x,y,x+w,y,r);
+    ctx.closePath();
+  }
+
+  function slugify(s){
+    return (s||'tarjeta-fondo').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,'') || 'tarjeta-fondo';
+  }
+
+  async function renderPlate(){
+    const DPI = 300;
+    const WIDTH_CM = 8, HEIGHT_CM = 4;
+    const W = Math.round(WIDTH_CM / 2.54 * DPI);   // ≈ 945px
+    const H = Math.round(HEIGHT_CM / 2.54 * DPI);  // ≈ 472px
+
+    const canvas = document.createElement('canvas');
+    canvas.width = W; canvas.height = H;
+    const ctx = canvas.getContext('2d');
+
+    try {
+      await document.fonts.load("600 60px 'Teko'");
+      await document.fonts.ready;
+    } catch(e){}
+
+    // background image (cover-fit, cropped to fill exactly, no distortion)
+    if(currentImage){
+      try {
+        const img = await new Promise((res,rej)=>{ const im=new Image(); im.onload=()=>res(im); im.onerror=rej; im.src=currentImage; });
+        const s = Math.max(W/img.naturalWidth, H/img.naturalHeight);
+        const dw = img.naturalWidth*s, dh = img.naturalHeight*s;
+        ctx.drawImage(img, (W-dw)/2, (H-dh)/2, dw, dh);
+      } catch(e){
+        ctx.fillStyle = '#e9e6df';
+        ctx.fillRect(0,0,W,H);
+      }
+    } else {
+      ctx.fillStyle = '#e9e6df';
+      ctx.fillRect(0,0,W,H);
+    }
+
+    // dark gradient scrim at the bottom so the text stays legible over any photo
+    const scrimH = Math.round(H*0.5);
+    const grad = ctx.createLinearGradient(0, H-scrimH, 0, H);
+    grad.addColorStop(0, 'rgba(0,0,0,0)');
+    grad.addColorStop(1, 'rgba(0,0,0,0.6)');
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, H-scrimH, W, scrimH);
+
+    // brand pill (top-left)
+    const brandSelect = el('brand');
+    const brandOpt = brandSelect.options[brandSelect.selectedIndex];
+    const brandName = brandOpt.value;
+    const accent = THEME_COLORS[brandOpt.dataset.theme || 'gen'];
+
+    ctx.font = `600 ${Math.round(H*0.075)}px 'Rajdhani', sans-serif`;
+    const pillPadX = Math.round(H*0.05);
+    const pillH = Math.round(H*0.16);
+    const pillTextW = ctx.measureText(brandName).width;
+    const pillW = pillTextW + pillPadX*2;
+    const pillX = Math.round(W*0.03), pillY = Math.round(H*0.07);
+    roundRectPath(ctx, pillX, pillY, pillW, pillH, pillH/2);
+    ctx.save();
+    ctx.shadowColor = 'rgba(0,0,0,0.35)'; ctx.shadowBlur = 6; ctx.shadowOffsetY = 2;
+    ctx.fillStyle = accent; ctx.fill();
+    ctx.restore();
+    ctx.fillStyle = '#ffffff';
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillText(brandName, pillX+pillW/2, pillY+pillH/2+1);
+    ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic';
+
+    // model name (auto-shrink to fit width), bottom-left
+    const padX = Math.round(W*0.045);
+    const maxTextW = W - padX*2;
+    let modelSize = Math.round(H*0.4);
+    ctx.font = `600 ${modelSize}px 'Teko', sans-serif`;
+    const modelText = (el('model').value || 'Nombre del modelo').toUpperCase();
+    while(ctx.measureText(modelText).width > maxTextW && modelSize > Math.round(H*0.16)){
+      modelSize -= 2;
+      ctx.font = `600 ${modelSize}px 'Teko', sans-serif`;
+    }
+    ctx.fillStyle = '#ffffff';
+    ctx.shadowColor = 'rgba(0,0,0,0.7)';
+    ctx.shadowBlur = 8;
+    ctx.shadowOffsetY = 2;
+    ctx.textBaseline = 'alphabetic';
+    ctx.fillText(modelText, padX, Math.round(H*0.86));
+    ctx.shadowColor = 'transparent'; ctx.shadowBlur = 0; ctx.shadowOffsetY = 0;
+
+    return canvas;
+  }
+
+  el('downloadBtn').addEventListener('click', async ()=>{
+    el('status').textContent = 'Generando imagen...';
+    try {
+      const canvas = await renderPlate();
+      const link = document.createElement('a');
+      link.download = slugify(el('model').value) + '-fondo.png';
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+      el('status').textContent = 'Imagen descargada (8×4 cm, 300 DPI).';
+    } catch(err){
+      el('status').textContent = 'Error al generar la imagen: ' + err.message;
+    }
+  });
+
+  updatePreview();
+})();
+</script>
+</body>
+</html>
