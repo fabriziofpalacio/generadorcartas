@@ -13,7 +13,7 @@
     --mb-red:#c8102e; --mb-yellow:#ffcf00;
     --gl-green:#0a5c36; --gl-lime:#8fd14f;
     --mj-purple:#5b2a86; --mj-pink:#e94f9c;
-    --premium-gold:#d4af37; --premium-gold-light:#f5d67d; --premium-text:#2b2106;
+    --premium-gold:#e8b400; --premium-gold-light:#ffe066; --premium-text:#2b1e00;
     --tier2-a:#4caf6f; --tier2-b:#8ee6ab; --tier2-text:#0b2412;
     --tier3-a:#3b82f6; --tier3-b:#93c5fd; --tier3-text:#0b1f3f;
     --tier4-a:#8b5cf6; --tier4-b:#c4b5fd; --tier4-text:#221238;
@@ -107,20 +107,32 @@
   .card.gen .card-stats .stat { background:rgba(255,255,255,.06); color:#fff; border-left:2px solid #9aa0a6; }
   .card.gen .card-footer { background: #4a4e54; color:#fff; }
 
-  .card.premium .card-inner { border-color: var(--premium-gold); box-shadow: 0 0 18px rgba(212,175,55,.55), inset 0 0 24px rgba(212,175,55,.08); }
+  .card.premium .card-inner { background: linear-gradient(180deg, #2b2410, #171207); border-color: var(--premium-gold); box-shadow: 0 0 20px rgba(232,180,0,.65), inset 0 0 24px rgba(232,180,0,.1); }
+  .card.premium .eyebrow, .card.premium .ftitle { color: var(--premium-gold-light); }
+  .card.premium .card-title { color: #fff6df; text-shadow:none; }
   .card.premium .card-logo { background: linear-gradient(135deg, var(--premium-gold), var(--premium-gold-light)); color: var(--premium-text); }
+  .card.premium .card-stats .stat { background: rgba(232,180,0,.25); color:#fff6df; border-left:2px solid var(--premium-gold); }
   .card.premium .card-footer { background: linear-gradient(135deg, var(--premium-gold), var(--premium-gold-light)); color: var(--premium-text); }
 
-  .card.tier2 .card-inner { border-color: var(--tier2-a); box-shadow: 0 0 10px rgba(76,175,111,.4); }
+  .card.tier2 .card-inner { background: linear-gradient(180deg, #123023, #081a12); border-color: var(--tier2-a); box-shadow: 0 0 10px rgba(76,175,111,.4); }
+  .card.tier2 .eyebrow, .card.tier2 .ftitle { color: var(--tier2-b); }
+  .card.tier2 .card-title { color: #eafff2; text-shadow:none; }
   .card.tier2 .card-logo { background: linear-gradient(135deg, var(--tier2-a), var(--tier2-b)); color: var(--tier2-text); }
+  .card.tier2 .card-stats .stat { background: rgba(76,175,111,.18); color:#eafff2; border-left:2px solid var(--tier2-a); }
   .card.tier2 .card-footer { background: linear-gradient(135deg, var(--tier2-a), var(--tier2-b)); color: var(--tier2-text); }
 
-  .card.tier3 .card-inner { border-color: var(--tier3-a); box-shadow: 0 0 13px rgba(59,130,246,.45); }
+  .card.tier3 .card-inner { background: linear-gradient(180deg, #0f2340, #071328); border-color: var(--tier3-a); box-shadow: 0 0 13px rgba(59,130,246,.45); }
+  .card.tier3 .eyebrow, .card.tier3 .ftitle { color: var(--tier3-b); }
+  .card.tier3 .card-title { color: #eaf2ff; text-shadow:none; }
   .card.tier3 .card-logo { background: linear-gradient(135deg, var(--tier3-a), var(--tier3-b)); color: var(--tier3-text); }
+  .card.tier3 .card-stats .stat { background: rgba(59,130,246,.2); color:#eaf2ff; border-left:2px solid var(--tier3-a); }
   .card.tier3 .card-footer { background: linear-gradient(135deg, var(--tier3-a), var(--tier3-b)); color: var(--tier3-text); }
 
-  .card.tier4 .card-inner { border-color: var(--tier4-a); box-shadow: 0 0 15px rgba(139,92,246,.5); }
+  .card.tier4 .card-inner { background: linear-gradient(180deg, #241a3d, #120b20); border-color: var(--tier4-a); box-shadow: 0 0 15px rgba(139,92,246,.5); }
+  .card.tier4 .eyebrow, .card.tier4 .ftitle { color: var(--tier4-b); }
+  .card.tier4 .card-title { color: #f3eeff; text-shadow:none; }
   .card.tier4 .card-logo { background: linear-gradient(135deg, var(--tier4-a), var(--tier4-b)); color: var(--tier4-text); }
+  .card.tier4 .card-stats .stat { background: rgba(139,92,246,.22); color:#f3eeff; border-left:2px solid var(--tier4-a); }
   .card.tier4 .card-footer { background: linear-gradient(135deg, var(--tier4-a), var(--tier4-b)); color: var(--tier4-text); }
 
   .status { font-size:12px; color:var(--text-muted); text-align:center; margin-top:8px; min-height:16px; }
@@ -404,26 +416,33 @@
     const contentX = innerX+10, contentW = innerW-20;
     const rarity = parseInt(el('starPicker').dataset.value) || 0;
     const TIER_STYLES = {
-      2: { c1:'#4caf6f', c2:'#8ee6ab', text:'#0b2412', glow:'rgba(76,175,111,0.4)',  blur:8  },
-      3: { c1:'#3b82f6', c2:'#93c5fd', text:'#0b1f3f', glow:'rgba(59,130,246,0.45)', blur:10 },
-      4: { c1:'#8b5cf6', c2:'#c4b5fd', text:'#221238', glow:'rgba(139,92,246,0.5)', blur:11 },
-      5: { c1:'#d4af37', c2:'#f5d67d', text:'#2b2106', glow:'rgba(212,175,55,0.6)', blur:12 }
+      2: { bgTop:'#123023', bgBottom:'#081a12', border:'#4caf6f', eyebrow:'#8ee6ab', title:'#eafff2', logoC1:'#4caf6f', logoC2:'#8ee6ab', logoText:'#0b2412', statBg:'rgba(76,175,111,0.18)', statBorderLeft:'#4caf6f', statText:'#eafff2', footerC1:'#4caf6f', footerC2:'#8ee6ab', footerText:'#0b2412', glow:'rgba(76,175,111,0.4)',  blur:8  },
+      3: { bgTop:'#0f2340', bgBottom:'#071328', border:'#3b82f6', eyebrow:'#93c5fd', title:'#eaf2ff', logoC1:'#3b82f6', logoC2:'#93c5fd', logoText:'#0b1f3f', statBg:'rgba(59,130,246,0.2)',  statBorderLeft:'#3b82f6', statText:'#eaf2ff', footerC1:'#3b82f6', footerC2:'#93c5fd', footerText:'#0b1f3f', glow:'rgba(59,130,246,0.45)', blur:10 },
+      4: { bgTop:'#241a3d', bgBottom:'#120b20', border:'#8b5cf6', eyebrow:'#c4b5fd', title:'#f3eeff', logoC1:'#8b5cf6', logoC2:'#c4b5fd', logoText:'#221238', statBg:'rgba(139,92,246,0.22)', statBorderLeft:'#8b5cf6', statText:'#f3eeff', footerC1:'#8b5cf6', footerC2:'#c4b5fd', footerText:'#221238', glow:'rgba(139,92,246,0.5)', blur:11 },
+      5: { bgTop:'#2b2410', bgBottom:'#171207', border:'#e8b400', eyebrow:'#ffe066', title:'#fff6df', logoC1:'#e8b400', logoC2:'#ffe066', logoText:'#2b1e00', statBg:'rgba(232,180,0,0.25)', statBorderLeft:'#e8b400', statText:'#fff6df', footerC1:'#e8b400', footerC2:'#ffe066', footerText:'#2b1e00', glow:'rgba(232,180,0,0.7)', blur:13 }
     };
     const tierStyle = TIER_STYLES[rarity] || null;
+    // when a rarity tier applies, it fully replaces the brand's color scheme (background, text, stats — everything)
+    const activeBg = tierStyle || t;
+    const activeBorder = tierStyle ? tierStyle.border : t.border;
+    const activeEyebrow = tierStyle ? tierStyle.eyebrow : t.eyebrow;
+    const activeTitle = tierStyle ? tierStyle.title : t.title;
+    const activeTitleShadow = tierStyle ? false : t.titleShadow;
+    const activeStatBg = tierStyle ? tierStyle.statBg : t.statBg;
+    const activeStatBorderLeft = tierStyle ? tierStyle.statBorderLeft : t.statBorderLeft;
+    const activeStatText = tierStyle ? tierStyle.statText : t.statText;
 
     // card background + border
     roundRectPath(ctx, innerX, innerY, innerW, innerH, radius);
     const grad = ctx.createLinearGradient(0, innerY, 0, innerY+innerH);
-    grad.addColorStop(0, t.bgTop); grad.addColorStop(1, t.bgBottom);
+    grad.addColorStop(0, activeBg.bgTop); grad.addColorStop(1, activeBg.bgBottom);
     ctx.fillStyle = grad; ctx.fill();
     ctx.lineWidth = 2;
     if(tierStyle){
-      const goldBorder = ctx.createLinearGradient(innerX, innerY, innerX+innerW, innerY+innerH);
-      goldBorder.addColorStop(0, tierStyle.c1); goldBorder.addColorStop(1, tierStyle.c2);
-      ctx.strokeStyle = goldBorder;
+      ctx.strokeStyle = activeBorder;
       ctx.shadowColor = tierStyle.glow; ctx.shadowBlur = tierStyle.blur;
     } else {
-      ctx.strokeStyle = t.border;
+      ctx.strokeStyle = activeBorder;
     }
     ctx.stroke();
     ctx.shadowColor = 'transparent'; ctx.shadowBlur = 0;
@@ -434,7 +453,7 @@
 
     // topbar
     ctx.textBaseline = 'top'; ctx.textAlign = 'left';
-    ctx.fillStyle = t.eyebrow;
+    ctx.fillStyle = activeEyebrow;
     ctx.font = "600 9px 'Rajdhani', sans-serif";
     ctx.fillText('FICHA DE COLECCIÓN', contentX, innerY+8);
 
@@ -449,9 +468,9 @@
     roundRectPath(ctx, pillX, pillY, pillW, pillH, pillH/2);
     if(tierStyle){
       const goldPill = ctx.createLinearGradient(pillX, pillY, pillX+pillW, pillY+pillH);
-      goldPill.addColorStop(0, tierStyle.c1); goldPill.addColorStop(1, tierStyle.c2);
+      goldPill.addColorStop(0, tierStyle.logoC1); goldPill.addColorStop(1, tierStyle.logoC2);
       ctx.fillStyle = goldPill; ctx.fill();
-      ctx.fillStyle = tierStyle.text;
+      ctx.fillStyle = tierStyle.logoText;
     } else {
       ctx.fillStyle = t.logoBg; ctx.fill();
       ctx.fillStyle = t.logoText;
@@ -492,8 +511,8 @@
       titleSize -= 2;
       ctx.font = `600 ${titleSize}px 'Teko', sans-serif`;
     }
-    if(t.titleShadow){ ctx.shadowColor='rgba(0,0,0,0.5)'; ctx.shadowBlur=3; ctx.shadowOffsetY=1; }
-    ctx.fillStyle = t.title;
+    if(activeTitleShadow){ ctx.shadowColor='rgba(0,0,0,0.5)'; ctx.shadowBlur=3; ctx.shadowOffsetY=1; }
+    ctx.fillStyle = activeTitle;
     ctx.fillText(modelText, contentX, titleY);
     ctx.shadowColor='transparent'; ctx.shadowBlur=0; ctx.shadowOffsetY=0;
 
@@ -502,7 +521,7 @@
     roundRectPath(ctx, contentX, factY, contentW, factH, 8);
     ctx.fillStyle = 'rgba(255,255,255,0.06)'; ctx.fill();
 
-    ctx.fillStyle = t.eyebrow;
+    ctx.fillStyle = activeEyebrow;
     ctx.font = "700 10px 'Rajdhani', sans-serif";
     ctx.fillText('FICHA TÉCNICA', contentX+10, factY+8);
 
@@ -518,13 +537,13 @@
     const statsY = factY+factH+8, rowH = 22, rowGap = 3;
     function drawStat(y, label, value){
       roundRectPath(ctx, contentX, y, contentW, rowH, 5);
-      ctx.fillStyle = t.statBg; ctx.fill();
-      if(t.statBorderLeft){
-        ctx.fillStyle = t.statBorderLeft;
+      ctx.fillStyle = activeStatBg; ctx.fill();
+      if(activeStatBorderLeft){
+        ctx.fillStyle = activeStatBorderLeft;
         ctx.fillRect(contentX, y, 2, rowH);
       }
       ctx.font = "600 11px 'Rajdhani', sans-serif";
-      ctx.fillStyle = t.statText;
+      ctx.fillStyle = activeStatText;
       ctx.textBaseline = 'middle';
       ctx.textAlign = 'left';
       ctx.fillText(label, contentX+8, y+rowH/2+1);
@@ -540,9 +559,9 @@
     roundRectPath(ctx, contentX, footerY, contentW, footerH, footerH/2);
     if(tierStyle){
       const goldFooter = ctx.createLinearGradient(contentX, footerY, contentX+contentW, footerY+footerH);
-      goldFooter.addColorStop(0, tierStyle.c1); goldFooter.addColorStop(1, tierStyle.c2);
+      goldFooter.addColorStop(0, tierStyle.footerC1); goldFooter.addColorStop(1, tierStyle.footerC2);
       ctx.fillStyle = goldFooter; ctx.fill();
-      ctx.fillStyle = tierStyle.text;
+      ctx.fillStyle = tierStyle.footerText;
     } else {
       ctx.fillStyle = t.footerBg; ctx.fill();
       ctx.fillStyle = t.footerText;
