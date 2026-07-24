@@ -71,6 +71,10 @@
   .card-stats { margin:0 10px; display:flex; flex-direction:column; gap:3px; }
   .card-stats .stat { font-family:'Rajdhani',sans-serif; border-radius:5px; padding:3px 8px; display:flex; justify-content:space-between; font-size:11px; font-weight:600; letter-spacing:.02em; }
   .card-footer { font-family:'Rajdhani',sans-serif; margin:8px 10px 10px; border-radius:20px; padding:4px 10px; font-size:11px; font-weight:600; letter-spacing:.04em; text-align:center; text-transform:uppercase; }
+  .card-footer.has-qr { height:58px; border-radius:8px; display:flex; align-items:center; justify-content:space-between; padding:0 10px; text-align:left; text-transform:none; letter-spacing:normal; }
+  .card-footer .qr-label { max-width:150px; line-height:1.2; font-size:11px; }
+  .card-footer .qr-box { width:44px; height:44px; background:#fff; border-radius:4px; padding:3px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+  .card-footer .qr-box canvas, .card-footer .qr-box img { width:100%; height:100%; display:block; }
 
   .card.hw .eyebrow, .card.hw .ftitle { color: var(--hw-red); }
   .card.hw .card-title { color: var(--hw-yellow); text-shadow: 0 1px 2px rgba(0,0,0,.5); }
@@ -137,6 +141,7 @@
 
   .status { font-size:12px; color:var(--text-muted); text-align:center; margin-top:8px; min-height:16px; }
 </style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 </head>
 <body>
 
@@ -231,6 +236,10 @@
         <div class="field"><label>Velocidad top (km/h)</label><input id="topspeed" placeholder="190"></div>
         <div class="field"><label>Motor</label><input id="engine" placeholder="2.5L"></div>
       </div>
+      <div class="field">
+        <label>Link para código QR (opcional)</label>
+        <input id="linkUrl" placeholder="https://hotwheels.fandom.com/es/wiki/...">
+      </div>
       <div class="actions">
         <button id="clearBtn"><i class="ti ti-refresh"></i> Limpiar</button>
       </div>
@@ -261,7 +270,13 @@
             <div class="stat"><span>VELOCIDAD TOP (KM/H)</span><span id="pv-topspeed">-</span></div>
             <div class="stat"><span>MOTOR</span><span id="pv-engine">-</span></div>
           </div>
-          <div class="card-footer">MI COLECCIÓN</div>
+          <div class="card-footer" id="pv-footer">
+            <span id="pv-footer-plain">MI COLECCIÓN</span>
+            <div class="qr-row" id="pv-footer-qr-row" style="display:none; align-items:center; justify-content:space-between; width:100%;">
+              <div class="qr-label">Escanea para más información</div>
+              <div class="qr-box" id="pv-qr-box"></div>
+            </div>
+          </div>
         </div>
       </div>
       <button id="downloadBtn"><i class="ti ti-download"></i> Descargar imagen</button>
@@ -312,6 +327,21 @@
     el('pv-rarity').textContent = starsString(starPicker.dataset.value);
     el('pv-topspeed').textContent = el('topspeed').value || '-';
     el('pv-engine').textContent = el('engine').value || '-';
+
+    const linkVal = el('linkUrl').value.trim();
+    const footerEl = el('pv-footer');
+    if(linkVal){
+      footerEl.classList.add('has-qr');
+      el('pv-footer-plain').style.display = 'none';
+      el('pv-footer-qr-row').style.display = 'flex';
+      const qrBox = el('pv-qr-box');
+      qrBox.innerHTML = '';
+      try { new QRCode(qrBox, { text: linkVal, width: 80, height: 80, correctLevel: QRCode.CorrectLevel.M }); } catch(e){}
+    } else {
+      footerEl.classList.remove('has-qr');
+      el('pv-footer-plain').style.display = '';
+      el('pv-footer-qr-row').style.display = 'none';
+    }
     const photo = el('pv-photo');
     if(currentImage){
       photo.style.backgroundImage = 'url(' + currentImage + ')';
@@ -322,7 +352,7 @@
     }
   }
 
-  ['brand','model','color','year','series','topspeed','engine'].forEach(id=>{
+  ['brand','model','color','year','series','topspeed','engine','linkUrl'].forEach(id=>{
     el(id).addEventListener('input', updatePreview);
     el(id).addEventListener('change', updatePreview);
   });
@@ -354,7 +384,7 @@
 
   el('clearBtn').addEventListener('click', ()=>{
     currentImage = null;
-    ['model','color','year','series','topspeed','engine'].forEach(id=> el(id).value='');
+    ['model','color','year','series','topspeed','engine','linkUrl'].forEach(id=> el(id).value='');
     el('imgDropLabel').textContent = 'Subir imagen';
     el('status').textContent = '';
     setStars(3);
@@ -517,21 +547,25 @@
     ctx.shadowColor='transparent'; ctx.shadowBlur=0; ctx.shadowOffsetY=0;
 
     // fact box
-    const factY = titleY+44+2, factH = 91;
+    const linkVal = (el('linkUrl').value || '').trim();
+    const hasQR = linkVal.length > 0;
+    const factY = titleY+44+2, factH = hasQR ? 55 : 91;
     roundRectPath(ctx, contentX, factY, contentW, factH, 8);
     ctx.fillStyle = 'rgba(255,255,255,0.06)'; ctx.fill();
 
     ctx.fillStyle = activeEyebrow;
     ctx.font = "700 10px 'Rajdhani', sans-serif";
-    ctx.fillText('FICHA TÉCNICA', contentX+10, factY+8);
+    ctx.fillText('FICHA TÉCNICA', contentX+10, factY+7);
 
+    const lineStep = hasQR ? 10 : 16;
+    const lineFont = hasQR ? "600 10px 'Rajdhani', sans-serif" : "600 13px 'Rajdhani', sans-serif";
     ctx.fillStyle = '#e8e8e8';
-    ctx.font = "600 13px 'Rajdhani', sans-serif";
-    ctx.fillText('Color: '+(color||'-'), contentX+10, factY+24);
-    ctx.fillText('Año: '+(year||'-'), contentX+10, factY+40);
-    ctx.fillText('Serie: '+(series||'-'), contentX+10, factY+56);
+    ctx.font = lineFont;
+    ctx.fillText('Color: '+(color||'-'), contentX+10, factY+7+lineStep);
+    ctx.fillText('Año: '+(year||'-'), contentX+10, factY+7+lineStep*2);
+    ctx.fillText('Serie: '+(series||'-'), contentX+10, factY+7+lineStep*3);
     ctx.fillStyle = '#ffb400';
-    ctx.fillText('Rareza: '+starsString(el('starPicker').dataset.value), contentX+10, factY+72);
+    ctx.fillText('Rareza: '+starsString(el('starPicker').dataset.value), contentX+10, factY+7+lineStep*4);
 
     // stats
     const statsY = factY+factH+8, rowH = 22, rowGap = 3;
@@ -555,21 +589,55 @@
     drawStat(statsY+rowH+rowGap, 'MOTOR', engine);
 
     // footer
-    const footerY = statsY+rowH*2+rowGap+6, footerH = 22;
-    roundRectPath(ctx, contentX, footerY, contentW, footerH, footerH/2);
-    if(tierStyle){
-      const goldFooter = ctx.createLinearGradient(contentX, footerY, contentX+contentW, footerY+footerH);
-      goldFooter.addColorStop(0, tierStyle.footerC1); goldFooter.addColorStop(1, tierStyle.footerC2);
-      ctx.fillStyle = goldFooter; ctx.fill();
-      ctx.fillStyle = tierStyle.footerText;
+    const footerY = statsY+rowH*2+rowGap+6, footerH = hasQR ? 58 : 22;
+
+    if(hasQR){
+      roundRectPath(ctx, contentX, footerY, contentW, footerH, 8);
+      ctx.fillStyle = 'rgba(255,255,255,0.08)'; ctx.fill();
+
+      const qrSize = 44;
+      const qrPad = 5;
+      const qrBoxX = contentX + contentW - qrPad - qrSize;
+      const qrBoxY = footerY + (footerH - qrSize)/2;
+
+      // white backing square for the QR
+      roundRectPath(ctx, qrBoxX-3, qrBoxY-3, qrSize+6, qrSize+6, 4);
+      ctx.fillStyle = '#ffffff'; ctx.fill();
+
+      try {
+        const tempDiv = document.createElement('div');
+        tempDiv.style.position = 'absolute';
+        tempDiv.style.left = '-9999px';
+        document.body.appendChild(tempDiv);
+        new QRCode(tempDiv, { text: linkVal, width: 200, height: 200, correctLevel: QRCode.CorrectLevel.M });
+        const qrCanvas = tempDiv.querySelector('canvas');
+        if(qrCanvas) ctx.drawImage(qrCanvas, qrBoxX, qrBoxY, qrSize, qrSize);
+        document.body.removeChild(tempDiv);
+      } catch(e){}
+
+      ctx.fillStyle = activeEyebrow;
+      ctx.font = "700 10px 'Rajdhani', sans-serif";
+      ctx.textBaseline = 'top';
+      ctx.fillText('ESCANEA PARA', contentX+10, footerY+10);
+      ctx.font = "500 10px 'Rajdhani', sans-serif";
+      ctx.fillStyle = '#e8e8e8';
+      ctx.fillText('más información', contentX+10, footerY+24);
     } else {
-      ctx.fillStyle = t.footerBg; ctx.fill();
-      ctx.fillStyle = t.footerText;
+      roundRectPath(ctx, contentX, footerY, contentW, footerH, footerH/2);
+      if(tierStyle){
+        const goldFooter = ctx.createLinearGradient(contentX, footerY, contentX+contentW, footerY+footerH);
+        goldFooter.addColorStop(0, tierStyle.footerC1); goldFooter.addColorStop(1, tierStyle.footerC2);
+        ctx.fillStyle = goldFooter; ctx.fill();
+        ctx.fillStyle = tierStyle.footerText;
+      } else {
+        ctx.fillStyle = t.footerBg; ctx.fill();
+        ctx.fillStyle = t.footerText;
+      }
+      ctx.font = "700 11px 'Rajdhani', sans-serif";
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.fillText('MI COLECCIÓN', contentX+contentW/2, footerY+footerH/2+1);
+      ctx.textAlign = 'left'; ctx.textBaseline = 'top';
     }
-    ctx.font = "700 11px 'Rajdhani', sans-serif";
-    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-    ctx.fillText('MI COLECCIÓN', contentX+contentW/2, footerY+footerH/2+1);
-    ctx.textAlign = 'left'; ctx.textBaseline = 'top';
 
     ctx.restore();
     return canvas;
